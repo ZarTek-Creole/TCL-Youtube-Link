@@ -1,11 +1,15 @@
 # TCL-Youtube-Link - Description
-This script retrieves information about Youtube titles using **Youtube API V3**.
-Allows you to search for titles with keywords
-It listens to youtube links on trade shows and displays title information
 
-Ce script récupère des informations sur les titres Youtube à l'aide de l'**API Youtube V3**.
-Permet de rechercher des titres avec des mots clefs
-Il écoute les liens youtube sur les salons et affiche les informations des titres
+* This script retrieves information about Youtube titles using **Youtube API V3**.
+* Allows you to search for titles with keywords
+* It listens to youtube links on trade shows and displays title information
+
+**Français**
+
+
+* Ce script récupère des informations sur les titres Youtube à l'aide de l'**API Youtube V3**.
+* Permet de rechercher des titres avec des mots clefs
+* Il écoute les liens youtube sur les salons et affiche les informations des titres
 
 # Auteur
 MalaGaM @ https://github.com/MalaGaM
