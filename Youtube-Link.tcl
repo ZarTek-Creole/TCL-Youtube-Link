@@ -13,10 +13,10 @@
 #		Il écoute les liens youtube sur les salons et affiche les informations des titres
 #
 #	Version		:
-#		2.6
+#		2.6.1
 #
 #	Donation	:
-#		https://ko-fi.com/malagam
+#		https://github.com/MalaGaM/DONATE
 #
 #	Auteur		:
 #		MalaGaM <MalaGaM.ARTiSPRETiS@GMail.Com> @ https://github.com/MalaGaM
@@ -58,7 +58,7 @@ namespace eval ::YouTubeLink {
 	# Pour obtenir une clef visitez :
 	#	https://developers.google.com/youtube/v3/
 	#
-	set API(Key)				"AIzaSyBqxx9ReJnALAoj6fZR8X5IiM0BUmzgp_4"
+	set API(Key)				"<YOUR_API_KEY>"
 
 	# Après combien de secondes décide-t-on que le site web utilisé par le script
 	# pour afficher les définitions est offline (ou trop lent) en l'absence de
@@ -149,9 +149,9 @@ namespace eval ::YouTubeLink {
 	# Valeur du scripts :
 	set Script(Name)				"TCL-YouTube-Link"
 	set Script(Auteur)				"MalaGaM <MalaGaM.ARTiSPRETiS@GMail.Com>"
-	set Script(Version)				"2.6"
-	set Script(Debug)				1
-	#									http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?
+	set Script(Version)				"2.6.1"
+	set Script(Debug)				0
+	
 	set Bind(RegExp_URLMatching)	{(?:http(?:s|).{3}|)(?:www.|)(?:youtube.com\/watch\?.*v=|youtu.be\/)([\w-]{11})}
 	set Bind(Matching)				{*youtu*be*/*}
 
@@ -165,7 +165,7 @@ namespace eval ::YouTubeLink {
 ### Procédure principale
 ###############################################################################
 proc ::YouTubeLink::add_thousand_separators {value} {
-	#https://www.boulets.oqp.me/tcl/routines/tcl-toolbox-0001.html
+	# https://www.boulets.oqp.me/tcl/routines/tcl-toolbox-0001.html
 	return [::tcl::string::trimleft [::tcl::string::reverse [regsub -all {...} [::tcl::string::reverse $value] {&.}]] "."]
 }
 proc ::YouTubeLink::DEBUG { text } {
@@ -313,6 +313,7 @@ proc ::YouTubeLink::IRC:Listen:Links {nick uhost hand chan text} {
 	variable API
 	variable Annonce
 	variable Format
+	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" } { return }
 	::YouTubeLink::DEBUG "::YouTubeLink::IRC:Listen:Links is running with $text from $chan/$nick"
 
 	if { ![regexp -nocase -- $Bind(RegExp_URLMatching) $text URL_Link id] } {
