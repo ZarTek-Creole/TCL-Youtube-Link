@@ -12,14 +12,11 @@
 #		Permet de rechercher des titres avec des mots clefs
 #		Il écoute les liens youtube sur les salons et affiche les informations des titres
 #
-#	Version		:
-#		2.6.1
-#
 #	Donation	:
 #		https://github.com/MalaGaM/DONATE
 #
 #	Auteur		:
-#		MalaGaM <MalaGaM.ARTiSPRETiS@GMail.Com> @ https://github.com/MalaGaM
+#		MalaGaM @ https://github.com/MalaGaM
 #
 #	Website		:
 #		https://github.com/MalaGaM/TCL-Youtube-Link
@@ -34,7 +31,7 @@
 #		m00nie		-	base code								:	www.m00nie.com
 #		Imhotep		-	ask and details							:	from www.eggdrop.fr
 #		CrazyCat	-	community french and help of eggdrop	:	https://www.eggdrop.fr
-#		MenzAgitat	-	tips/toolbox							:	https://www.boulets.oqp.me/
+#		MenzAgitat	-	tips/toolbox							:	https://boulets.eggdrop.fr
 #
 ###############################################################################################
 
