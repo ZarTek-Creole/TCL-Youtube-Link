@@ -93,10 +93,22 @@ namespace eval ::YouTubeLink {
 	# Les variables disponibles :
 	#
 	#	\${ITEM_NUM}			: Affiche la numerotation du titre trouvé
-	#	\${ITEM_TITLE}	: Affiche le nom/descriptions du titre trouvé
+	#	\${ITEM_TITLE}			: Affiche le nom/descriptions du titre trouvé
 	#	\${ITEM_LINK}			: Affiche l'adresse url du titre trouvé
+	# Extra :
+	#	\${MUSIC_CHANNEL}	: Affiche le nom de la chaine youtube
+	#	\${MUSIC_DURATION}	: Affiche la durée du titre
+	#	\${MUSIC_PUBLISH}	: Affiche quand le titre a été publié
+	#	\${MUSIC_VIEWED}	: Affiche le nombre de fois que le titre a été vue/lue
 	#
+
+	# Annonce basique | Basic Annonce
 	set Annonce(Message_Search)	"\002\00305\${ITEM_NUM}\00314)\003 \00307\${ITEM_TITLE} \002\00314-\003 \00305\${ITEM_LINK}\003"
+	
+	# Annonce avec plus d'informations | Announcement with more information
+	# set Annonce(Message_Search)	"\002\00305\${ITEM_NUM}\00314)\003 \00307\${ITEM_TITLE} \002\00314-\003 \00305\${ITEM_LINK}\003 \00305(\00314Durée:\00307 \${MUSIC_DURATION}\00305)-(\00314Nombre de vues: \00307\${MUSIC_VIEWED}\00305)"
+
+	###
 
 	# Message en cas de aucun resultat lors d'une recherche
 	set Annonce(Null_Resultat)	"\002\00305\Aucun Resultat trouvé.\003"
@@ -259,13 +271,14 @@ proc ::YouTubeLink::IRC:Search { nick uhost hand chan text } {
 	variable Channels
 	variable Annonce
 	variable CMDIRC
+	variable Format
 	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" } { return }
 	# !yt info 1
 	if {
-			[string match -nocase "info" [lindex $text 0]]	\
-			&& [string is digit -strict [lindex $text 1]]	\
-			&& [lindex $text 2] == ""						\
-			&& [info exists YTDB([lindex $text 1])]
+		[string match -nocase "info" [lindex $text 0]]	\
+		&& [string is digit -strict [lindex $text 1]]	\
+		&& [lindex $text 2] == ""						\
+		&& [info exists YTDB([lindex $text 1])]
 	} {
 		set NUM	[lindex $text 1]
 		::YouTubeLink::IRC:Listen:Links $nick $uhost $hand $chan "${Annonce(URL_YT)}$YTDB($NUM)"
@@ -279,7 +292,6 @@ proc ::YouTubeLink::IRC:Search { nick uhost hand chan text } {
 	::YouTubeLink::DEBUG "::YouTubeLink::IRC:Search is running with $text from $chan/$nick"
 
 	set URL_Link			"${API(URL)}/search?part=snippet&fields=items(id(videoId),snippet(title))&[::http::formatQuery key $API(Key) maxResults [expr $API(Max_Resultats) + 1] q [lrange [split $text] 0 end]]"
-	putlog $URL_Link
 	set URL_DATA			[::YouTubeLink::API:GetInfo ${URL_Link}]
 	if { [ catch {
     	::YouTubeLink::API:ControlInfo ${URL_DATA}
@@ -305,6 +317,30 @@ proc ::YouTubeLink::IRC:Search { nick uhost hand chan text } {
 		set TMP_TITLE		[encoding convertfrom [lindex ${ITEMS_DATA} $i 3 1]];
 		set ITEM_TITLE		[string map -nocase [list "&amp;" "&" "&#39;" "'" "&quot;" "\""] $TMP_TITLE];
 		set ITEM_LINK		"${Annonce(URL_YT)}${ITEM_ID}";
+
+		if { 
+			[string match "*MUSIC_DURATION*" $::YouTubeLink::Annonce(Message_Search)] \
+			|| [string match "*MUSIC_PUBLISH*" $::YouTubeLink::Annonce(Message_Search)] \
+			|| [string match "*MUSIC_CHANNEL*" $::YouTubeLink::Annonce(Message_Search)] \
+			|| [string match "*MUSIC_DURATION*" $::YouTubeLink::Annonce(Message_Search)] \
+			|| [string match "*MUSIC_VIEWED*" $::YouTubeLink::Annonce(Message_Search)]
+		} {
+			set URL_Link				"${API(URL)}/videos?id=${ITEM_ID}&part=snippet,statistics,contentDetails&fields=items(snippet(title,channelTitle,publishedAt),statistics(viewCount),contentDetails(duration))&[::http::formatQuery key $API(Key)]"
+			set URL_DATA				[::YouTubeLink::API:GetInfo ${URL_Link}]
+			if { [ catch {
+				::YouTubeLink::API:ControlInfo ${URL_DATA}
+			} ERROR_MSG ] } {
+				puthelp "PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG} (${URL_Link})"
+				return 
+			}
+			set ITEM_DATA				{*}[dict get ${URL_DATA} items]
+			set MUSIC_PUBLISH_iso8601	[dict get ${ITEM_DATA} snippet publishedAt]
+			set MUSIC_PUBLISH			[clock format [::clock::iso8601 parse_time $MUSIC_PUBLISH_iso8601] -format $Format(Date) -locale $Format(Date_locale)]
+			set MUSIC_CHANNEL			[encoding convertfrom [dict get ${ITEM_DATA} snippet channelTitle]]
+			set MUSIC_DURATION			[::YouTubeLink::FCT:ISO8601:TO:DURATION [dict get ${ITEM_DATA} contentDetails duration]]
+			set MUSIC_VIEWED			[::YouTubeLink::add_thousand_separators [dict get ${ITEM_DATA} statistics viewCount]]
+		}
+
 		append output 		[subst $Annonce(Message_Search)] ${Annonce(Split_Char)}
 		if { $LOOP_NUM == ${Annonce(Max_Links)} } {
 			set LOOP_NUM	0
