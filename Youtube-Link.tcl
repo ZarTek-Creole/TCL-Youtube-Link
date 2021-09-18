@@ -225,6 +225,12 @@ proc ::YouTubeLink::ThrottleCheck { nick chan link } {
 		return 0
 	}
 }
+proc ::YouTubeLink::API:ControlInfo { URL_DATA } {
+	if { [dict exists ${URL_DATA} error] } {
+       return -code error [dict get [dict get ${URL_DATA} error] message]
+	}
+	return ${URL_DATA}
+}
 proc ::YouTubeLink::API:GetInfo { URL_Link } {
 	variable API
 	::http::register https 443 [list ::tls::socket -tls1 1]
@@ -243,7 +249,7 @@ proc ::YouTubeLink::API:GetInfo { URL_Link } {
 		set received_data [::http::data ${token}]
 		::http::cleanup ${token}
 		::http::unregister https
-		return [dict get [json::json2dict ${received_data}] items]
+		return [json::json2dict ${received_data}]
 	}
 
 }
@@ -272,23 +278,31 @@ proc ::YouTubeLink::IRC:Search { nick uhost hand chan text } {
 	}
 	::YouTubeLink::DEBUG "::YouTubeLink::IRC:Search is running with $text from $chan/$nick"
 
-	set URL_Link		"${API(URL)}/search?part=snippet&fields=items(id(videoId),snippet(title))&[::http::formatQuery key $API(Key) maxResults [expr $API(Max_Resultats) + 1] q [lrange [split $text] 0 end]]"
-	set URL_DATA		[::YouTubeLink::API:GetInfo ${URL_Link}]
-	set URL_DATA_LENGTH	[llength $URL_DATA]
-	set ITEM_NUM		0
-	set LOOP_NUM		0
-	if { $URL_DATA_LENGTH == 0 } {
+	set URL_Link			"${API(URL)}/search?part=snippet&fields=items(id(videoId),snippet(title))&[::http::formatQuery key $API(Key) maxResults [expr $API(Max_Resultats) + 1] q [lrange [split $text] 0 end]]"
+	putlog $URL_Link
+	set URL_DATA			[::YouTubeLink::API:GetInfo ${URL_Link}]
+	if { [ catch {
+    	::YouTubeLink::API:ControlInfo ${URL_DATA}
+	} ERROR_MSG ] } {
+		puthelp "PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG}"
+		return 
+	}
+	set ITEMS_DATA			[dict get ${URL_DATA} items]
+	set ITEMS_DATA_LENGTH	[llength ${ITEMS_DATA}]
+	set ITEM_NUM			0
+	set LOOP_NUM			0
+	if { ${ITEMS_DATA_LENGTH} == 0 } {
 		puthelp "PRIVMSG $chan :${Annonce(Prefix)} ${Annonce(Null_Resultat)}"
 		return
 	}
-	for { set i 0 } { $i < $URL_DATA_LENGTH } { incr i } {
-		set ITEM_ID		[lindex $URL_DATA $i 1 1];
+	for { set i 0 } { $i < ${ITEMS_DATA_LENGTH} } { incr i } {
+		set ITEM_ID		[lindex ${ITEMS_DATA} $i 1 1];
 		if { $ITEM_ID == "" } { continue }
 		
 		incr ITEM_NUM
 		incr LOOP_NUM
 		set YTDB($ITEM_NUM)	${ITEM_ID}
-		set TMP_TITLE		[encoding convertfrom [lindex $URL_DATA $i 3 1]];
+		set TMP_TITLE		[encoding convertfrom [lindex ${ITEMS_DATA} $i 3 1]];
 		set ITEM_TITLE		[string map -nocase [list "&amp;" "&" "&#39;" "'" "&quot;" "\""] $TMP_TITLE];
 		set ITEM_LINK		"${Annonce(URL_YT)}${ITEM_ID}";
 		append output 		[subst $Annonce(Message_Search)] ${Annonce(Split_Char)}
@@ -323,17 +337,23 @@ proc ::YouTubeLink::IRC:Listen:Links {nick uhost hand chan text} {
 	}
 	::YouTubeLink::DEBUG "::YouTubeLink::IRC:Listen:Links info: url is: ${URL_Link} and id is: $id"
 	set URL_Link				"${API(URL)}/videos?id=$id&part=snippet,statistics,contentDetails&fields=items(snippet(title,channelTitle,publishedAt),statistics(viewCount),contentDetails(duration))&[::http::formatQuery key $API(Key)]"
-	putlog "$URL_Link"
-	set URL_DATA				{*}[::YouTubeLink::API:GetInfo ${URL_Link}]
-	set MUSIC_TITLE				[encoding convertfrom [dict get $URL_DATA snippet title]]
-	set MUSIC_PUBLISH_iso8601	[dict get $URL_DATA snippet publishedAt]
+	set URL_DATA				[::YouTubeLink::API:GetInfo ${URL_Link}]
+	if { [ catch {
+    	::YouTubeLink::API:ControlInfo ${URL_DATA}
+	} ERROR_MSG ] } {
+		puthelp "PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG}"
+		return 
+	}
+	set ITEMS_DATA				{*}[dict get ${URL_DATA} items]
+	set MUSIC_TITLE				[encoding convertfrom [dict get ${ITEMS_DATA} snippet title]]
+	set MUSIC_PUBLISH_iso8601	[dict get ${ITEMS_DATA} snippet publishedAt]
 
 	set MUSIC_PUBLISH			[clock format [::clock::iso8601 parse_time $MUSIC_PUBLISH_iso8601] -format $Format(Date) -locale $Format(Date_locale)]
-	set MUSIC_CHANNEL			[encoding convertfrom [dict get $URL_DATA snippet channelTitle]]
-	set MUSIC_DURATION			[::YouTubeLink::FCT:ISO8601:TO:DURATION [dict get $URL_DATA contentDetails duration]]
-	set MUSIC_VIEWED			[::YouTubeLink::add_thousand_separators [dict get $URL_DATA statistics viewCount]]
-	set isotime					[lindex $URL_DATA 0 3 1]
-	set views					[lindex $URL_DATA 0 5 1]
+	set MUSIC_CHANNEL			[encoding convertfrom [dict get ${ITEMS_DATA} snippet channelTitle]]
+	set MUSIC_DURATION			[::YouTubeLink::FCT:ISO8601:TO:DURATION [dict get ${ITEMS_DATA} contentDetails duration]]
+	set MUSIC_VIEWED			[::YouTubeLink::add_thousand_separators [dict get ${ITEMS_DATA} statistics viewCount]]
+	set isotime					[lindex ${ITEMS_DATA} 0 3 1]
+	set views					[lindex ${ITEMS_DATA} 0 5 1]
 	puthelp "PRIVMSG $chan :${Annonce(Prefix)} [subst $Annonce(Message)]"
 }
 
