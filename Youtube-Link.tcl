@@ -324,6 +324,7 @@ proc ::YouTubeLink::IRC:Listen:Links {nick uhost hand chan text} {
 	variable API
 	variable Annonce
 	variable Format
+	variable Channels
 	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" } { return }
 	::YouTubeLink::DEBUG "::YouTubeLink::IRC:Listen:Links is running with $text from $chan/$nick"
 
