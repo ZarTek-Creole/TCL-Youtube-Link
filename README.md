@@ -16,6 +16,14 @@
 # Auteur
 MalaGaM @ https://github.com/MalaGaM
 
+# Pre-requis
+* eggdrop min v1.6.20 
+* package tcl min v8.5
+* package tls min v1.7.11
+*	packagehttp min v2.8.9
+*	package json min v1.3
+* package clock::iso8601 min v0.1
+
 # Website
 Site internet officiel du script TCL-Youtube
 * https://github.com/MalaGaM/TCL-Youtube-Link
