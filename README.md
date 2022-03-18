@@ -20,7 +20,7 @@ MalaGaM @ https://github.com/MalaGaM
 * eggdrop min v1.6.20 
 * package tcl min v8.5
 * package tls min v1.7.11
-*	packagehttp min v2.8.9
+*	package http min v2.8.9
 *	package json min v1.3
 * package clock::iso8601 min v0.1
 
