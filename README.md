@@ -14,7 +14,7 @@
 ![image](https://user-images.githubusercontent.com/11725850/119846268-4699e100-bf0a-11eb-80f1-7cf5c7fbb5bc.png)
 
 # Auteur
-MalaGaM @ https://github.com/MalaGaM
+ZarTek-Creole @ https://github.com/ZarTek-Creole
 
 # Pre-requis
 * eggdrop min v1.6.20 
@@ -26,20 +26,20 @@ MalaGaM @ https://github.com/MalaGaM
 
 # Website
 Site internet officiel du script TCL-Youtube
-* https://github.com/MalaGaM/TCL-Youtube-Link
+* https://github.com/ZarTek-Creole/TCL-Youtube-Link
 
 # Support
 Si vous avez des remarques, des suggestiones, des idées, des bogues vous pouvez me les faires parvenir via le formulaire issue:
-* https://github.com/MalaGaM/TCL-Youtube-Link/issues
+* https://github.com/ZarTek-Creole/TCL-Youtube-Link/issues
 
 # Docs
 Installation, connfiguration, astuces c'est sur
-* https://github.com/MalaGaM/TCL-Youtube-Link/wiki
+* https://github.com/ZarTek-Creole/TCL-Youtube-Link/wiki
 
 # Donation
 Si le script ou le travail accomplie vous plait, vous pouvez faire une donation pour encourager :
-* https://ko-fi.com/malagam
-* https://github.com/MalaGaM/DONATE
+* https://ko-fi.com/zartek
+* https://github.com/ZarTek-Creole/DONATE
 # Thank's
 Merci aux differentes personnes qui ont permet la realisation du script:
 
