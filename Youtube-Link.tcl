@@ -191,12 +191,12 @@ proc ::YouTubeLink::INIT { } {
 	### Initialisation
 	#############################################################################
 
-	if { [package vcompare [regexp -inline {^[[:digit:]\.]+} $::version] 1.6.20] == -1 } { putloglev o * "\00304\[$Script(Name) - erreur\]\003 La version de votre Eggdrop est\00304 ${::version}\003; $Script(Name) ne fonctionnera correctement que sur les Eggdrops version 1.6.20 ou supérieure." ; return }
-	if { [::tcl::info::tclversion] < 8.5 } { putloglev o * "\00304\[$Script(Name) - erreur\]\003 $Script(Name) nécessite que Tcl 8.5 (ou plus) soit installé pour fonctionner. Votre version actuelle de Tcl est\00304 ${::tcl_version}\003." ; return }
-	if { [catch { package require tls 1.7.11 }] } { putloglev o * "\00304\[$Script(Name) - erreur\]\003 $Script(Name) nécessite le package tls 1.7 (ou plus) pour fonctionner. Le chargement du script a été annulé." ; return }
-	if { [catch { package require http 2.8.9 }] } { putloglev o * "\00304\[$Script(Name) - erreur\]\003 $Script(Name) nécessite le package http 2.9 (ou plus) pour fonctionner. Le chargement du script a été annulé." ; return }
-	if { [catch { package require json 1.3 }] } { putloglev o * "\00304\[$Script(Name) - erreur\]\003 $Script(Name) nécessite le package json 1.3 (ou plus) pour fonctionner. Le chargement du script a été annulé." ; return }
-	if { [catch { package require clock::iso8601 0.1 }] } { putloglev o * "\00304\[$Script(Name) - erreur\]\003 $Script(Name) nécessite le package clock::iso8601 0.1 (ou plus) pour fonctionner. Le chargement du script a été annulé." ; return }
+	if { [package vcompare [regexp -inline {^[[:digit:]\.]+} $::version] 1.6.20] == -1 } { putloglev o * "\[$Script(Name) - erreur\] La version de votre Eggdrop est ${::version}\003; $Script(Name) ne fonctionnera correctement que sur les Eggdrops version 1.6.20 ou supérieure." ; return }
+	if { [::tcl::info::tclversion] < 8.5 } { putloglev o * "\[$Script(Name) - erreur\] $Script(Name) nécessite que Tcl 8.5 (ou plus) soit installé pour fonctionner. Votre version actuelle de Tcl est ${::tcl_version}\003." ; return }
+	if { [catch { package require tls 1.7.11 }] } { putloglev o * "\[$Script(Name) - erreur\] $Script(Name) nécessite le package tls 1.7 (ou plus) pour fonctionner. Le chargement du script a été annulé." ; return }
+	if { [catch { package require http 2.8.9 }] } { putloglev o * "\[$Script(Name) - erreur\] $Script(Name) nécessite le package http 2.8.9 (ou plus) pour fonctionner. Le chargement du script a été annulé." ; return }
+	if { [catch { package require json 1.3 }] } { putloglev o * "\[$Script(Name) - erreur\] $Script(Name) nécessite le package json 1.3 (ou plus) pour fonctionner. Le chargement du script a été annulé." ; return }
+	if { [catch { package require clock::iso8601 0.1 }] } { putloglev o * "\[$Script(Name) - erreur\] $Script(Name) nécessite le package clock::iso8601 0.1 (ou plus) pour fonctionner. Le chargement du script a été annulé." ; return }
 	
 	::http::config -useragent $API(UserAgent)
 	###############################################################################
