@@ -13,19 +13,19 @@
 #		Il écoute les liens youtube sur les salons et affiche les informations des titres
 #
 #	Donation	:
-#		https://github.com/ZarTek-Creole/DONATE
+#		github.com/ZarTek-Creole/DONATE
 #
 #	Auteur		:
-#		ZarTek @ https://github.com/ZarTek
+#		ZarTek @ github.com/ZarTek-Creole
 #
 #	Website		:
-#		https://github.com/ZarTek-Creole/TCL-Youtube-Link
+#		github.com/ZarTek-Creole/TCL-Youtube-Link
 #
 #	Support		:
-#		https://github.com/ZarTek-Creole/TCL-Youtube-Link/issues
+#		github.com/ZarTek-Creole/TCL-Youtube-Link/issues
 #
 #	Docs		:
-#		https://github.com/ZarTek-Creole/TCL-Youtube-Link/wiki
+#		github.com/ZarTek-Creole/TCL-Youtube-Link/wiki
 #
 #	Thanks to	:
 #		m00nie		-	base code								:	www.m00nie.com

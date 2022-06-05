@@ -1,3 +1,11 @@
+[![CC BY 4.0][cc-by-shield]][cc-by]
+This work is licensed under a [Creative Commons Attribution 4.0 International License][cc-by].
+[![CC BY 4.0][cc-by-image]][cc-by]
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+[cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
+
+ <span class="badge-opencollective"><a href="https://github.com/ZarTek-Creole/DONATE" title="Donate to this project"><img src="https://img.shields.io/badge/open%20collective-donate-yellow.svg" alt="Open Collective donate button" /></a></span>
 # TCL-Youtube-Link - Description
 
 * This script retrieves information about Youtube titles using **Youtube API V3**.
@@ -14,7 +22,7 @@
 ![image](https://user-images.githubusercontent.com/11725850/119846268-4699e100-bf0a-11eb-80f1-7cf5c7fbb5bc.png)
 
 # Auteur
-ZarTek-Creole @ https://github.com/ZarTek-Creole
+ZarTek-Creole @ github.com/ZarTek-Creole
 
 # Pre-requis
 * eggdrop min v1.6.20 
@@ -26,20 +34,20 @@ ZarTek-Creole @ https://github.com/ZarTek-Creole
 
 # Website
 Site internet officiel du script TCL-Youtube
-* https://github.com/ZarTek-Creole/TCL-Youtube-Link
+* github.com/ZarTek-Creole/TCL-Youtube-Link
 
 # Support
 Si vous avez des remarques, des suggestiones, des idées, des bogues vous pouvez me les faires parvenir via le formulaire issue:
-* https://github.com/ZarTek-Creole/TCL-Youtube-Link/issues
+* github.com/ZarTek-Creole/TCL-Youtube-Link/issues
 
 # Docs
 Installation, connfiguration, astuces c'est sur
-* https://github.com/ZarTek-Creole/TCL-Youtube-Link/wiki
+* github.com/ZarTek-Creole/TCL-Youtube-Link/wiki
 
 # Donation
 Si le script ou le travail accomplie vous plait, vous pouvez faire une donation pour encourager :
 * https://ko-fi.com/zartek
-* https://github.com/ZarTek-Creole/DONATE
+* github.com/ZarTek-Creole/DONATE
 # Thank's
 Merci aux differentes personnes qui ont permet la realisation du script:
 
