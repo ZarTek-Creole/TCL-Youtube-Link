@@ -13,19 +13,19 @@
 #		Il écoute les liens youtube sur les salons et affiche les informations des titres
 #
 #	Donation	:
-#		https://github.com/MalaGaM/DONATE
+#		https://github.com/ZarTek-Creole/DONATE
 #
 #	Auteur		:
-#		MalaGaM @ https://github.com/MalaGaM
+#		ZarTek @ https://github.com/ZarTek
 #
 #	Website		:
-#		https://github.com/MalaGaM/TCL-Youtube-Link
+#		https://github.com/ZarTek-Creole/TCL-Youtube-Link
 #
 #	Support		:
-#		https://github.com/MalaGaM/TCL-Youtube-Link/issues
+#		https://github.com/ZarTek-Creole/TCL-Youtube-Link/issues
 #
 #	Docs		:
-#		https://github.com/MalaGaM/TCL-Youtube-Link/wiki
+#		https://github.com/ZarTek-Creole/TCL-Youtube-Link/wiki
 #
 #	Thanks to	:
 #		m00nie		-	base code								:	www.m00nie.com
@@ -157,7 +157,7 @@ namespace eval ::YouTubeLink {
 	
 	# Valeur du scripts :
 	set Script(Name)				"TCL-YouTube-Link"
-	set Script(Auteur)				"MalaGaM <MalaGaM.ARTiSPRETiS@GMail.Com>"
+	set Script(Auteur)				"ZarTek <ZarTek.Creole@GMail.Com>"
 	set Script(Version)				"2.6.1"
 	set Script(Debug)				0
 	
