@@ -26,19 +26,19 @@ Site internet officiel du script TCL-Youtube
 * github.com/ZarTek-Creole/TCL-Youtube-Link
 
 # Support
-Si vous avez des remarques, des suggestiones, des idées, des bogues vous pouvez me les faires parvenir via le formulaire issue:
+Si vous avez des remarques, des suggestions, des idées, des bogues vous pouvez me les faire parvenir via le formulaire issue:
 * github.com/ZarTek-Creole/TCL-Youtube-Link/issues
 
 # Docs
-Installation, connfiguration, astuces c'est sur
+Installation, configuration, astuces c'est sur
 * github.com/ZarTek-Creole/TCL-Youtube-Link/wiki
 
 # Donation
-Si le script ou le travail accomplie vous plait, vous pouvez faire une donation pour encourager :
+Si le script ou le travail accompli vous plaît, vous pouvez faire une don pour encourager :
 * https://ko-fi.com/zartek
 * github.com/ZarTek-Creole/DONATE
 # Thank's
-Merci aux differentes personnes qui ont permet la realisation du script:
+Merci aux differentes personnes qui ont permis la realisation du script:
 
 Nom | participation | url
 ---------|----------|---------
@@ -48,4 +48,4 @@ CrazyCat | community french and help of eggdrop | https://www.eggdrop.fr
 MenzAgitat | tips/toolbox | https://www.boulets.oqp.me/
 
 # Contributeurs
-Toutes contributions est la bienvenue
+Toute contribution est la bienvenue
