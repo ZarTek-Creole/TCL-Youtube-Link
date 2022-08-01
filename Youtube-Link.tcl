@@ -12,6 +12,10 @@
 #		Permet de rechercher des titres avec des mots clefs
 #		Il écoute les liens youtube sur les salons et affiche les informations des titres
 #
+#       Activation      :
+#               .chanset #channel +youtube
+#               .chanset * +youtube
+#
 #	Donation	:
 #		github.com/ZarTek-Creole/DONATE
 #
@@ -35,7 +39,7 @@
 #
 ###############################################################################################
 
-# Décharger si déjà charger : Reset du script
+# Décharger si déjà chargé : Reset du script
 if { [::tcl::info::commands ::YouTubeLink::Script:Unload] eq "::YouTubeLink::Script:Unload" } { ::YouTubeLink::Script:Unload }
 
 namespace eval ::YouTubeLink {
@@ -46,7 +50,6 @@ namespace eval ::YouTubeLink {
 	variable Throttled
 	variable Script
 	variable Bind
-	variable Channels
 
 	######################################################################################
 	### Configuration Utilisateur     *** (Modifier les variables dans cette sections) ***
@@ -128,13 +131,6 @@ namespace eval ::YouTubeLink {
 	#	Plus d'information sur https://www.tcl.tk/man/tcl/TclCmd/clock.htm#M20
 	set Format(Date_locale)		"fr"
 
-	# Liste des salons où le script sera active
-	#	mettre "*" pour tout les salons
-	# Exemple pour autoriser #channel1 et #channel2
-	#	set Channels(Allow)				" #channel1  #channel2"
-	set Channels(Allow)			"*"
-	
-	
 	######################################################################################
 	###  Fin de la Configuration Utilisateur
 	######################################################################################
@@ -158,7 +154,7 @@ namespace eval ::YouTubeLink {
 	# Valeur du scripts :
 	set Script(Name)				"TCL-YouTube-Link"
 	set Script(Auteur)				"ZarTek <ZarTek.Creole@GMail.Com>"
-	set Script(Version)				"2.6.1"
+	set Script(Version)				"2.6.2"
 	set Script(Debug)				0
 	
 	set Bind(RegExp_URLMatching)	{(?:http(?:s|).{3}|)(?:www.|)(?:youtube.com\/watch\?.*v=|youtu.be\/)([\w-]{11})}
@@ -173,6 +169,8 @@ namespace eval ::YouTubeLink {
 ###############################################################################
 ### Procédure principale
 ###############################################################################
+setudef flag youtube
+
 proc ::YouTubeLink::add_thousand_separators {value} {
 	# https://www.boulets.oqp.me/tcl/routines/tcl-toolbox-0001.html
 	return [::tcl::string::trimleft [::tcl::string::reverse [regsub -all {...} [::tcl::string::reverse $value] {&.}]] "."]
@@ -268,11 +266,10 @@ proc ::YouTubeLink::API:GetInfo { URL_Link } {
 proc ::YouTubeLink::IRC:Search { nick uhost hand chan text } {
 	variable YTDB
 	variable API
-	variable Channels
 	variable Annonce
 	variable CMDIRC
 	variable Format
-	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" } { return }
+	if {![channel get $chan youtube]} { return }
 	# !yt info 1
 	if {
 		[string match -nocase "info" [lindex $text 0]]	\
@@ -360,8 +357,7 @@ proc ::YouTubeLink::IRC:Listen:Links {nick uhost hand chan text} {
 	variable API
 	variable Annonce
 	variable Format
-	variable Channels
-	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" } { return }
+	if {![channel get $chan youtube]} { return }
 	::YouTubeLink::DEBUG "::YouTubeLink::IRC:Listen:Links is running with $text from $chan/$nick"
 
 	if { ![regexp -nocase -- $Bind(RegExp_URLMatching) $text URL_Link id] } {
