@@ -38,14 +38,39 @@ git clone https://github.com/ZarTek-Creole/TCL-Youtube-Link /home/<eggdrop>/scri
 ```
 ## Installation & Configuration
 Verifier que le repertoire ce trouve bien dans le repertoire `scripts/` de votre eggdrop.
+
 Editez le fichier Youtube-link.tcl, en rensiegnant les variables au début par rapport a vos envies/besoins.
+
 Mettez bien une clef API que vous pouvez obtenir gratuitement sur https://console.cloud.google.com/apis/api/youtube.googleapis.com/overview
 
 Ajouter dans votre fichier eggdrop.conf le script:
+
 ```
 source scripts/TCL-Youtube-Link/Youtube-Link.tcl
 ```
-Redemarer votre eggdrop ou rehasher-le.
+# Configuration des salons
+## Par Flags
+### Activation sur un salon spécifique
+```
+.chanset #channel +youtube
+```
+### Activation sur tous les salons
+```
+.chanset * +youtube
+```
+## Par liste de salon
+
+### Activation sur certains salons
+```
+set Channels(Allow)     "#channel1  #channel2"
+```
+
+### Activation sur tous les salons
+```
+set Channels(Allow)		"*"
+```
+
+Rehasher ou redemmarer votre eggdrop.
 
 # Donation
 Si le script ou le travail accompli vous plaît, vous pouvez faire une don pour encourager :

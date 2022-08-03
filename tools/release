@@ -215,7 +215,6 @@ then
 	git push origin "v${VERS_NEW}"
 	git push origin develop
 else
-	  echo "major"
  	# Commit the release and tag it.
 	git push origin "v${VERS_NEW}"
 
