@@ -50,7 +50,7 @@ Index by:  <a href="index_main.html#Youtube-Link.tcl">file name</a> |
 <font color="#208020">###############################################################################################</font>
 
 <font color="#208020"># Décharger si déjà charger : Reset du script</font>
-if { [::tcl::info::commands ::YouTubeLink::Script:Unload] eq &quot;::YouTubeLink::Script:Unload&quot; } { <a name="::YouTubeLink::Script:Unload(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::Script:Unload_213">::YouTubeLink::Script:Unload</a></a> }
+if { [::tcl::info::commands ::YouTubeLink::Script:Unload] eq &quot;::YouTubeLink::Script:Unload&quot; } { <a name="::YouTubeLink::Script:Unload(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::Script:Unload_214">::YouTubeLink::Script:Unload</a></a> }
 
 namespace eval ::YouTubeLink {
 	variable API
@@ -66,7 +66,7 @@ namespace eval ::YouTubeLink {
 	array set Script {
 		&quot;Name&quot;		&quot;TCL-YouTube-Link&quot;
 		&quot;Auteur&quot;	&quot;ZarTek-Creole @ https://github.com/ZarTek-Creole&quot;
-		&quot;Version&quot;	&quot;2.6.2&quot;
+		&quot;Version&quot;	&quot;2.7.0&quot;
 		&quot;Debug&quot;		&quot;0&quot;
 	}
 
@@ -189,15 +189,16 @@ namespace eval ::YouTubeLink {
 <font color="#208020">###############################################################################</font>
 <font color="#208020">### Procédure principale</font>
 <font color="#208020">###############################################################################</font>
-<strong><a name="::YouTubeLink::add_thousand_separators_178">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::add_thousand_separators">::YouTubeLink::add_thousand_separators</a></a></strong><a name="::YouTubeLink::add_thousand_separators"></a> {value} {
+setudef flag youtube
+<strong><a name="::YouTubeLink::add_thousand_separators_179">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::add_thousand_separators">::YouTubeLink::add_thousand_separators</a></a></strong><a name="::YouTubeLink::add_thousand_separators"></a> {value} {
 	<font color="#208020"># https://www.boulets.oqp.me/tcl/routines/tcl-toolbox-0001.html</font>
 	return [::tcl::string::trimleft [::tcl::string::reverse [regsub -all {...} [::tcl::string::reverse $value] {&amp;.}]] &quot;.&quot;]
 }
-<strong><a name="::YouTubeLink::DEBUG_182">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::DEBUG">::YouTubeLink::DEBUG</a></a></strong><a name="::YouTubeLink::DEBUG"></a> { text } {
+<strong><a name="::YouTubeLink::DEBUG_183">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::DEBUG">::YouTubeLink::DEBUG</a></a></strong><a name="::YouTubeLink::DEBUG"></a> { text } {
 	variable Script
 	if { $Script(Debug) } { putlog &quot;\[$Script(Name)\] $text&quot; }
 }
-<strong><a name="::YouTubeLink::INIT_186">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::INIT">::YouTubeLink::INIT</a></a></strong><a name="::YouTubeLink::INIT"></a> { } {
+<strong><a name="::YouTubeLink::INIT_187">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::INIT">::YouTubeLink::INIT</a></a></strong><a name="::YouTubeLink::INIT"></a> { } {
 	variable Script
 	variable API
 	variable CMDIRC
@@ -224,7 +225,7 @@ namespace eval ::YouTubeLink {
 
 	putlog &quot;$Script(Name) $Script(Version) by $Script(Auteur) loaded.&quot;
 }
-<strong><a name="::YouTubeLink::Script:Unload_213">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::Script:Unload">::YouTubeLink::Script:Unload</a></a></strong><a name="::YouTubeLink::Script:Unload"></a> {args} {
+<strong><a name="::YouTubeLink::Script:Unload_214">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::Script:Unload">::YouTubeLink::Script:Unload</a></a></strong><a name="::YouTubeLink::Script:Unload"></a> {args} {
 	variable Script
 	putlog &quot;Désallocation des ressources de ${Script(Name)} ...&quot;
 	foreach binding [lsearch -inline -all -regexp [binds *[set ns [::tcl::string::range [namespace current] 2 end]]*] &quot; \{?(::)?$ns&quot;] {
@@ -235,16 +236,16 @@ namespace eval ::YouTubeLink {
 	}
 	namespace delete [namespace current] ::[namespace current]
 }
-<strong><a name="::YouTubeLink::ThrottleCheck_224">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::ThrottleCheck">::YouTubeLink::ThrottleCheck</a></a></strong><a name="::YouTubeLink::ThrottleCheck"></a> { nick chan link } {
+<strong><a name="::YouTubeLink::ThrottleCheck_225">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::ThrottleCheck">::YouTubeLink::ThrottleCheck</a></a></strong><a name="::YouTubeLink::ThrottleCheck"></a> { nick chan link } {
 	variable Throttled
 	if { [info exists ::YouTubeLink::Throttled($link)]} {
-		<a name="::YouTubeLink::DEBUG(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::ThrottleCheck search term or video id: $link, is Throttled at the moment&quot;
+		<a name="::YouTubeLink::DEBUG(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::ThrottleCheck search term or video id: $link, is Throttled at the moment&quot;
 		return 1
 	} elseif {[info exists ::YouTubeLink::Throttled($chan)]} {
-		<a name="::YouTubeLink::DEBUG(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::ThrottleCheck Channel $chan is Throttled at the moment&quot;
+		<a name="::YouTubeLink::DEBUG(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::ThrottleCheck Channel $chan is Throttled at the moment&quot;
 		return 1
 	} elseif {[info exists ::YouTubeLink::Throttled($nick)]} {
-		<a name="::YouTubeLink::DEBUG(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::ThrottleCheck User $nick is Throttled at the moment&quot;
+		<a name="::YouTubeLink::DEBUG(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::ThrottleCheck User $nick is Throttled at the moment&quot;
 		return 1
 	} else {
 		set ::YouTubeLink::Throttled($nick) [utimer $Throttled(User) [list unset ::YouTubeLink::Throttled($nick)]]
@@ -253,13 +254,13 @@ namespace eval ::YouTubeLink {
 		return 0
 	}
 }
-<strong><a name="::YouTubeLink::API:ControlInfo_242">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::API:ControlInfo">::YouTubeLink::API:ControlInfo</a></a></strong><a name="::YouTubeLink::API:ControlInfo"></a> { URL_DATA } {
+<strong><a name="::YouTubeLink::API:ControlInfo_243">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::API:ControlInfo">::YouTubeLink::API:ControlInfo</a></a></strong><a name="::YouTubeLink::API:ControlInfo"></a> { URL_DATA } {
 	if { [dict exists ${URL_DATA} error] } {
        return -code error [dict get [dict get ${URL_DATA} error] message]
 	}
 	return ${URL_DATA}
 }
-<strong><a name="::YouTubeLink::API:GetInfo_248">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::API:GetInfo">::YouTubeLink::API:GetInfo</a></a></strong><a name="::YouTubeLink::API:GetInfo"></a> { URL_Link } {
+<strong><a name="::YouTubeLink::API:GetInfo_249">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::API:GetInfo">::YouTubeLink::API:GetInfo</a></a></strong><a name="::YouTubeLink::API:GetInfo"></a> { URL_Link } {
 	variable API
 	::http::register https 443 [list ::tls::socket -tls1 1]
 	array set httpconfig	[::http::config]
@@ -271,7 +272,7 @@ namespace eval ::YouTubeLink {
 	<font color="#208020"># on restaure l'urlencoding comme il était avant qu'on y touche</font>
 	::http::config -urlencoding $httpconfig(-urlencoding)
 	if { [catch { set token [::http::geturl ${URL_Link} -timeout [expr $API(Timeout) * 1000]] }] } {
-		<a name="::YouTubeLink::DEBUG(4)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::API:GetInfo \00314La connexion à \00312\037[set URL_Link]\037\003\00314 n'a pas pu être établie. Il est possible que le site rencontre un problème technique.\003&quot;
+		<a name="::YouTubeLink::DEBUG(4)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::API:GetInfo \00314La connexion à \00312\037[set URL_Link]\037\003\00314 n'a pas pu être établie. Il est possible que le site rencontre un problème technique.\003&quot;
 	} elseif {[::http::status ${token}] eq &quot;ok&quot;} {
 		<font color="#208020"># on extrait la partie qui nous intéresse et sur laquelle on va travailler</font>
 		set received_data [::http::data ${token}]
@@ -281,14 +282,14 @@ namespace eval ::YouTubeLink {
 	}
 
 }
-<strong><a name="::YouTubeLink::IRC:Search_270">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::IRC:Search">::YouTubeLink::IRC:Search</a></a></strong><a name="::YouTubeLink::IRC:Search"></a> { nick uhost hand chan text } {
+<strong><a name="::YouTubeLink::IRC:Search_271">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::IRC:Search">::YouTubeLink::IRC:Search</a></a></strong><a name="::YouTubeLink::IRC:Search"></a> { nick uhost hand chan text } {
 	variable YTDB
 	variable API
 	variable Channels
 	variable Annonce
 	variable CMDIRC
 	variable Format
-	if { $Channels(Allow) != &quot;*&quot; &amp;&amp; [lsearch -nocase $Channels(Allow) $chan] == &quot;-1&quot; } { return }
+	if { $Channels(Allow) != &quot;*&quot; &amp;&amp; [lsearch -nocase $Channels(Allow) $chan] == &quot;-1&quot; &amp;&amp; ![channel get ${chan} youtube] } { return }
 	<font color="#208020"># !yt info 1</font>
 	if {
 		[string match -nocase &quot;info&quot; [lindex $text 0]]	\
@@ -297,20 +298,20 @@ namespace eval ::YouTubeLink {
 		&amp;&amp; [info exists YTDB([lindex $text 1])]
 	} {
 		set NUM	[lindex $text 1]
-		<a name="::YouTubeLink::IRC:Listen:Links(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::IRC:Listen:Links_360">::YouTubeLink::IRC:Listen:Links</a></a> $nick $uhost $hand $chan &quot;${Annonce(URL_YT)}$YTDB($NUM)&quot;
+		<a name="::YouTubeLink::IRC:Listen:Links(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::IRC:Listen:Links_361">::YouTubeLink::IRC:Listen:Links</a></a> $nick $uhost $hand $chan &quot;${Annonce(URL_YT)}$YTDB($NUM)&quot;
 		return 
 	}
 
-	if { [<a name="::YouTubeLink::ThrottleCheck(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::ThrottleCheck_224">::YouTubeLink::ThrottleCheck</a></a> $nick $chan $text] } {
-		<a name="::YouTubeLink::DEBUG(5)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::IRC:Search INFO: ThrottleCheck protection: $nick $chan $text&quot;
+	if { [<a name="::YouTubeLink::ThrottleCheck(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::ThrottleCheck_225">::YouTubeLink::ThrottleCheck</a></a> $nick $chan $text] } {
+		<a name="::YouTubeLink::DEBUG(5)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::IRC:Search INFO: ThrottleCheck protection: $nick $chan $text&quot;
 		return
 	}
-	<a name="::YouTubeLink::DEBUG(6)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Search is running with $text from $chan/$nick&quot;
+	<a name="::YouTubeLink::DEBUG(6)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Search is running with $text from $chan/$nick&quot;
 
 	set URL_Link			&quot;${API(URL)}/search?part=snippet&amp;fields=items(id(videoId),snippet(title))&amp;[::http::formatQuery key $API(Key) maxResults [expr $API(Max_Resultats) + 1] q [lrange [split $text] 0 end]]&quot;
-	set URL_DATA			[<a name="::YouTubeLink::API:GetInfo(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_248">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
+	set URL_DATA			[<a name="::YouTubeLink::API:GetInfo(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_249">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
 	if { [ catch {
-    	<a name="::YouTubeLink::API:ControlInfo(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_242">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
+    	<a name="::YouTubeLink::API:ControlInfo(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_243">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
 	} ERROR_MSG ] } {
 		puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG}&quot;
 		return 
@@ -342,9 +343,9 @@ namespace eval ::YouTubeLink {
 			|| [string match &quot;*MUSIC_VIEWED*&quot; $::YouTubeLink::Annonce(Message_Search)]
 		} {
 			set URL_Link				&quot;${API(URL)}/videos?id=${ITEM_ID}&amp;part=snippet,statistics,contentDetails&amp;fields=items(snippet(title,channelTitle,publishedAt),statistics(viewCount),contentDetails(duration))&amp;[::http::formatQuery key $API(Key)]&quot;
-			set URL_DATA				[<a name="::YouTubeLink::API:GetInfo(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_248">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
+			set URL_DATA				[<a name="::YouTubeLink::API:GetInfo(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_249">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
 			if { [ catch {
-				<a name="::YouTubeLink::API:ControlInfo(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_242">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
+				<a name="::YouTubeLink::API:ControlInfo(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_243">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
 			} ERROR_MSG ] } {
 				puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG} (${URL_Link})&quot;
 				return 
@@ -353,8 +354,8 @@ namespace eval ::YouTubeLink {
 			set MUSIC_PUBLISH_iso8601	[dict get ${ITEM_DATA} snippet publishedAt]
 			set MUSIC_PUBLISH			[clock format [::clock::iso8601 parse_time $MUSIC_PUBLISH_iso8601] -format $Format(Date) -locale $Format(Date_locale)]
 			set MUSIC_CHANNEL			[encoding convertfrom [dict get ${ITEM_DATA} snippet channelTitle]]
-			set MUSIC_DURATION			[<a name="::YouTubeLink::FCT:ISO8601:TO:DURATION(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::FCT:ISO8601:TO:DURATION_399">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a> [dict get ${ITEM_DATA} contentDetails duration]]
-			set MUSIC_VIEWED			[<a name="::YouTubeLink::add_thousand_separators(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::add_thousand_separators_178">::YouTubeLink::add_thousand_separators</a></a> [dict get ${ITEM_DATA} statistics viewCount]]
+			set MUSIC_DURATION			[<a name="::YouTubeLink::FCT:ISO8601:TO:DURATION(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::FCT:ISO8601:TO:DURATION_400">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a> [dict get ${ITEM_DATA} contentDetails duration]]
+			set MUSIC_VIEWED			[<a name="::YouTubeLink::add_thousand_separators(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::add_thousand_separators_179">::YouTubeLink::add_thousand_separators</a></a> [dict get ${ITEM_DATA} statistics viewCount]]
 		}
 
 		append output 		[subst $Annonce(Message_Search)] ${Annonce(Split_Char)}
@@ -371,28 +372,28 @@ namespace eval ::YouTubeLink {
 	puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} Info: $CMD info &lt;num&gt;&quot;
 }
 
-<strong><a name="::YouTubeLink::IRC:Listen:Links_360">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::IRC:Listen:Links">::YouTubeLink::IRC:Listen:Links</a></a></strong><a name="::YouTubeLink::IRC:Listen:Links"></a> {nick uhost hand chan text} {
+<strong><a name="::YouTubeLink::IRC:Listen:Links_361">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::IRC:Listen:Links">::YouTubeLink::IRC:Listen:Links</a></a></strong><a name="::YouTubeLink::IRC:Listen:Links"></a> {nick uhost hand chan text} {
 	variable Bind
 	variable API
 	variable Annonce
 	variable Format
 	variable Channels
-	if { $Channels(Allow) != &quot;*&quot; &amp;&amp; [lsearch -nocase $Channels(Allow) $chan] == &quot;-1&quot; } { return }
-	<a name="::YouTubeLink::DEBUG(7)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links is running with $text from $chan/$nick&quot;
+	if { $Channels(Allow) != &quot;*&quot; &amp;&amp; [lsearch -nocase $Channels(Allow) $chan] == &quot;-1&quot; &amp;&amp; ![channel get $chan youtube] } { return }
+	<a name="::YouTubeLink::DEBUG(7)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links is running with $text from $chan/$nick&quot;
 
 	if { ![regexp -nocase -- $Bind(RegExp_URLMatching) $text URL_Link id] } {
-		<a name="::YouTubeLink::DEBUG(8)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links ERREUR: regexp $Bind(RegExp_URLMatching) not match $text sur $chan&quot;
+		<a name="::YouTubeLink::DEBUG(8)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links ERREUR: regexp $Bind(RegExp_URLMatching) not match $text sur $chan&quot;
 		return
 	}
-	if { [<a name="::YouTubeLink::ThrottleCheck(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::ThrottleCheck_224">::YouTubeLink::ThrottleCheck</a></a> $nick $chan $id] } {
-		<a name="::YouTubeLink::DEBUG(9)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::IRC:Listen:Links INFO: ThrottleCheck protection: $nick $chan $text&quot;
+	if { [<a name="::YouTubeLink::ThrottleCheck(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::ThrottleCheck_225">::YouTubeLink::ThrottleCheck</a></a> $nick $chan $id] } {
+		<a name="::YouTubeLink::DEBUG(9)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::IRC:Listen:Links INFO: ThrottleCheck protection: $nick $chan $text&quot;
 		return
 	}
-	<a name="::YouTubeLink::DEBUG(10)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_182">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links info: url is: ${URL_Link} and id is: $id&quot;
+	<a name="::YouTubeLink::DEBUG(10)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links info: url is: ${URL_Link} and id is: $id&quot;
 	set URL_Link				&quot;${API(URL)}/videos?id=$id&amp;part=snippet,statistics,contentDetails&amp;fields=items(snippet(title,channelTitle,publishedAt),statistics(viewCount),contentDetails(duration))&amp;[::http::formatQuery key $API(Key)]&quot;
-	set URL_DATA				[<a name="::YouTubeLink::API:GetInfo(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_248">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
+	set URL_DATA				[<a name="::YouTubeLink::API:GetInfo(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_249">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
 	if { [ catch {
-    	<a name="::YouTubeLink::API:ControlInfo(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_242">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
+    	<a name="::YouTubeLink::API:ControlInfo(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_243">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
 	} ERROR_MSG ] } {
 		puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG}&quot;
 		return 
@@ -403,14 +404,14 @@ namespace eval ::YouTubeLink {
 
 	set MUSIC_PUBLISH			[clock format [::clock::iso8601 parse_time $MUSIC_PUBLISH_iso8601] -format $Format(Date) -locale $Format(Date_locale)]
 	set MUSIC_CHANNEL			[encoding convertfrom [dict get ${ITEMS_DATA} snippet channelTitle]]
-	set MUSIC_DURATION			[<a name="::YouTubeLink::FCT:ISO8601:TO:DURATION(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::FCT:ISO8601:TO:DURATION_399">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a> [dict get ${ITEMS_DATA} contentDetails duration]]
-	set MUSIC_VIEWED			[<a name="::YouTubeLink::add_thousand_separators(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::add_thousand_separators_178">::YouTubeLink::add_thousand_separators</a></a> [dict get ${ITEMS_DATA} statistics viewCount]]
+	set MUSIC_DURATION			[<a name="::YouTubeLink::FCT:ISO8601:TO:DURATION(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::FCT:ISO8601:TO:DURATION_400">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a> [dict get ${ITEMS_DATA} contentDetails duration]]
+	set MUSIC_VIEWED			[<a name="::YouTubeLink::add_thousand_separators(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::add_thousand_separators_179">::YouTubeLink::add_thousand_separators</a></a> [dict get ${ITEMS_DATA} statistics viewCount]]
 	set isotime					[lindex ${ITEMS_DATA} 0 3 1]
 	set views					[lindex ${ITEMS_DATA} 0 5 1]
 	puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} [subst $Annonce(Message)]&quot;
 }
 
-<strong><a name="::YouTubeLink::FCT:ISO8601:TO:DURATION_399">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::FCT:ISO8601:TO:DURATION">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a></strong><a name="::YouTubeLink::FCT:ISO8601:TO:DURATION"></a> { isotime } {
+<strong><a name="::YouTubeLink::FCT:ISO8601:TO:DURATION_400">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::FCT:ISO8601:TO:DURATION">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a></strong><a name="::YouTubeLink::FCT:ISO8601:TO:DURATION"></a> { isotime } {
 	regsub -all {PT|S} $isotime &quot;&quot; isotime
 	regsub -all {H|M} $isotime &quot;:&quot; isotime
 	if { [string index $isotime end-1] == &quot;:&quot; } {
@@ -425,7 +426,7 @@ namespace eval ::YouTubeLink {
 	return $isotime
 }
 <font color="#208020"># Chargement du script</font>
-<a name="::YouTubeLink::INIT(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::INIT_186">::YouTubeLink::INIT</a></a>
+<a name="::YouTubeLink::INIT(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::INIT_187">::YouTubeLink::INIT</a></a>
 
 </pre>
 <hr>
@@ -434,7 +435,7 @@ Index by:  <a href="index_main.html#byfilename">file name</a> |
 <a href="index_main.html#byprocname">procedure name</a> |
 <a href="index_main.html#bycall">procedure call</a> |
 <a href="index_annot_full.html">annotation</a><br>
-<cite>Index generated 2022-08-03 at 11:53.</cite>
+<cite>Index generated 2022-08-03 at 12:51.</cite>
 </font>
 </body>
 </html>

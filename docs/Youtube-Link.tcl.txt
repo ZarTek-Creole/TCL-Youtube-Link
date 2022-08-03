@@ -52,7 +52,7 @@ namespace eval ::YouTubeLink {
 	array set Script {
 		"Name"		"TCL-YouTube-Link"
 		"Auteur"	"ZarTek-Creole @ https://github.com/ZarTek-Creole"
-		"Version"	"2.6.2"
+		"Version"	"2.7.0"
 		"Debug"		"0"
 	}
 
@@ -175,6 +175,7 @@ namespace eval ::YouTubeLink {
 ###############################################################################
 ### Procédure principale
 ###############################################################################
+setudef flag youtube
 proc ::YouTubeLink::add_thousand_separators {value} {
 	# https://www.boulets.oqp.me/tcl/routines/tcl-toolbox-0001.html
 	return [::tcl::string::trimleft [::tcl::string::reverse [regsub -all {...} [::tcl::string::reverse $value] {&.}]] "."]
@@ -274,7 +275,7 @@ proc ::YouTubeLink::IRC:Search { nick uhost hand chan text } {
 	variable Annonce
 	variable CMDIRC
 	variable Format
-	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" } { return }
+	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" && ![channel get ${chan} youtube] } { return }
 	# !yt info 1
 	if {
 		[string match -nocase "info" [lindex $text 0]]	\
@@ -363,7 +364,7 @@ proc ::YouTubeLink::IRC:Listen:Links {nick uhost hand chan text} {
 	variable Annonce
 	variable Format
 	variable Channels
-	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" } { return }
+	if { $Channels(Allow) != "*" && [lsearch -nocase $Channels(Allow) $chan] == "-1" && ![channel get $chan youtube] } { return }
 	::YouTubeLink::DEBUG "::YouTubeLink::IRC:Listen:Links is running with $text from $chan/$nick"
 
 	if { ![regexp -nocase -- $Bind(RegExp_URLMatching) $text URL_Link id] } {
