@@ -218,7 +218,7 @@ else
  	# Commit the release and tag it.
 	git push origin "v${VERS_NEW}"
 
-
+	git push origin develop
 	git checkout master
 	git merge --no-ff develop
 	git tag -a "${VERS_NEW}"
