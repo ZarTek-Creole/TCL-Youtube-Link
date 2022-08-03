@@ -1,0 +1,441 @@
+<html>
+<head><title>Youtube-Link.tcl</title></head>
+<body bgcolor="#ffffff">
+<font size="-2">
+Index by:  <a href="index_main.html#Youtube-Link.tcl">file name</a> |
+<a href="index_main.html#byprocname">procedure name</a> |
+<a href="index_main.html#bycall">procedure call</a> |
+<a href="index_annot_full.html">annotation</a>
+</font>
+<hr>
+<strong>Youtube-Link.tcl</strong>
+(<a href="Youtube-Link.tcl-annot.html">annotations</a> | <a href="Youtube-Link.tcl.txt">original source</a>)
+<p>
+<pre>
+<font color="#208020">###############################################################################################</font>
+<font color="#208020">#</font>
+<font color="#208020">#	Name		:</font>
+<font color="#208020">#		TCL-Youtube-Link.tcl</font>
+<font color="#208020">#</font>
+<font color="#208020">#	Description	:</font>
+<font color="#208020">#		This script retrieves information about Youtube titles using Youtube API V3.</font>
+<font color="#208020">#		Allows you to search for titles with keywords</font>
+<font color="#208020">#		It listens to youtube links on trade shows and displays title information</font>
+<font color="#208020">#</font>
+<font color="#208020">#		Ce script récupère des informations sur les titres Youtube à l'aide de l'API Youtube V3.</font>
+<font color="#208020">#		Permet de rechercher des titres avec des mots clefs</font>
+<font color="#208020">#		Il écoute les liens youtube sur les salons et affiche les informations des titres</font>
+<font color="#208020">#</font>
+<font color="#208020">#	Donation	:</font>
+<font color="#208020">#		github.com/ZarTek-Creole/DONATE</font>
+<font color="#208020">#</font>
+<font color="#208020">#	Auteur		:</font>
+<font color="#208020">#		ZarTek @ github.com/ZarTek-Creole</font>
+<font color="#208020">#</font>
+<font color="#208020">#	Website		:</font>
+<font color="#208020">#		github.com/ZarTek-Creole/TCL-Youtube-Link</font>
+<font color="#208020">#</font>
+<font color="#208020">#	Support		:</font>
+<font color="#208020">#		github.com/ZarTek-Creole/TCL-Youtube-Link/issues</font>
+<font color="#208020">#</font>
+<font color="#208020">#	Docs		:</font>
+<font color="#208020">#		github.com/ZarTek-Creole/TCL-Youtube-Link/wiki</font>
+<font color="#208020">#</font>
+<font color="#208020">#	Thanks to	:</font>
+<font color="#208020">#		m00nie		-	base code								:	www.m00nie.com</font>
+<font color="#208020">#		Imhotep		-	ask and details							:	from www.eggdrop.fr</font>
+<font color="#208020">#		CrazyCat	-	community french and help of eggdrop	:	https://www.eggdrop.fr</font>
+<font color="#208020">#		MenzAgitat	-	tips/toolbox							:	https://boulets.eggdrop.fr</font>
+<font color="#208020">#</font>
+<font color="#208020">###############################################################################################</font>
+
+<font color="#208020"># Décharger si déjà charger : Reset du script</font>
+if { [::tcl::info::commands ::YouTubeLink::Script:Unload] eq &quot;::YouTubeLink::Script:Unload&quot; } { <a name="::YouTubeLink::Script:Unload(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::Script:Unload_214">::YouTubeLink::Script:Unload</a></a> }
+
+namespace eval ::YouTubeLink {
+	variable API
+	variable YTDB
+	variable CMDIRC
+	variable Annonce
+	variable Throttled
+	variable Script
+	variable Bind
+	variable Channels
+
+	<font color="#208020"># Valeur du scripts :</font>
+	array set Script {
+		&quot;Name&quot;		&quot;TCL-YouTube-Link&quot;
+		&quot;Auteur&quot;	&quot;ZarTek-Creole @ https://github.com/ZarTek-Creole&quot;
+		&quot;Version&quot;	&quot;2.7.0&quot;
+		&quot;Debug&quot;		&quot;0&quot;
+	}
+
+	<font color="#208020">######################################################################################</font>
+	<font color="#208020">### Configuration Utilisateur     *** (Modifier les variables dans cette sections) ***</font>
+	<font color="#208020">######################################################################################</font>
+	<font color="#208020"># Cette clé est la vôtre et devrait rester secrète. </font>
+	<font color="#208020"># Pour obtenir une clef visitez :</font>
+	<font color="#208020">#	https://developers.google.com/youtube/v3/</font>
+	<font color="#208020">#</font>
+	set API(Key)				&quot;&lt;YOUR_API_KEY&gt;&quot;
+
+	<font color="#208020"># Après combien de secondes décide-t-on que le site web utilisé par le script</font>
+	<font color="#208020"># pour afficher les définitions est offline (ou trop lent) en l'absence de</font>
+	<font color="#208020"># réponse de sa part ?</font>
+	set API(Timeout)			10
+
+	<font color="#208020"># Nombre de resultats maximun</font>
+	set API(Max_Resultats)		5
+
+	<font color="#208020"># Liste des commandes aux quelles le script doit répondre :</font>
+	set CMDIRC(Public)			&quot;!yt !youtube&quot;
+
+	<font color="#208020"># Autorisations pour la commande publique</font>
+	<font color="#208020">#	Plus d'information sur https://wiki.eggdrop.fr/Flags</font>
+	set CMDIRC(Public_Flags)	&quot;-&quot;
+
+	<font color="#208020"># Configurer dans la variable Annonce(Prefix) ce que vous desire voir devant les message :</font>
+	set Annonce(Prefix)			&quot;\002\00301,00You\00300,04Tube\003\002&quot;
+
+	<font color="#208020"># Configurer dans la variable Annonce(Message) l'annonce de sortie voulu lors d'un lien url youtube</font>
+	<font color="#208020">#</font>
+	<font color="#208020"># Les variables disponibles :</font>
+	<font color="#208020">#</font>
+	<font color="#208020">#	\${MUSIC_TITLE}		: Affiche le titre de la musique</font>
+	<font color="#208020">#	\${MUSIC_CHANNEL}	: Affiche le nom de la chaine youtube</font>
+	<font color="#208020">#	\${MUSIC_DURATION}	: Affiche la durée du titre</font>
+	<font color="#208020">#	\${MUSIC_PUBLISH}	: Affiche quand le titre a été publié</font>
+	<font color="#208020">#	\${MUSIC_VIEWED}	: Affiche le nombre de fois que le titre a été vue/lue</font>
+	<font color="#208020">#</font>
+
+	set Annonce(Message)		&quot;\002\00307\${MUSIC_TITLE}\002 \00305(\00314Durée:\00307 \${MUSIC_DURATION}\00305)-(\00314Nombre de vues: \00307\${MUSIC_VIEWED}\00305)-(\00314Chaine:\00307 \${MUSIC_CHANNEL}\00305)-(\00314Publiée:\00307 \$MUSIC_PUBLISH\00305)\003&quot;
+
+	<font color="#208020"># Configurer dans la variable Annonce(Message_Search) l'annonce de sortie voulu lors d'une recherche youtube</font>
+		<font color="#208020">#</font>
+	<font color="#208020"># Les variables disponibles :</font>
+	<font color="#208020">#</font>
+	<font color="#208020">#	\${ITEM_NUM}			: Affiche la numerotation du titre trouvé</font>
+	<font color="#208020">#	\${ITEM_TITLE}			: Affiche le nom/descriptions du titre trouvé</font>
+	<font color="#208020">#	\${ITEM_LINK}			: Affiche l'adresse url du titre trouvé</font>
+	<font color="#208020"># Extra :</font>
+	<font color="#208020">#	\${MUSIC_CHANNEL}	: Affiche le nom de la chaine youtube</font>
+	<font color="#208020">#	\${MUSIC_DURATION}	: Affiche la durée du titre</font>
+	<font color="#208020">#	\${MUSIC_PUBLISH}	: Affiche quand le titre a été publié</font>
+	<font color="#208020">#	\${MUSIC_VIEWED}	: Affiche le nombre de fois que le titre a été vue/lue</font>
+	<font color="#208020">#</font>
+
+	<font color="#208020"># Annonce basique | Basic Annonce</font>
+	set Annonce(Message_Search)	&quot;\002\00305\${ITEM_NUM}\00314)\003 \00307\${ITEM_TITLE} \002\00314-\003 \00305\${ITEM_LINK}\003&quot;
+	
+	<font color="#208020"># Annonce avec plus d'informations | Announcement with more information</font>
+	<font color="#208020"># set Annonce(Message_Search)	&quot;\002\00305\${ITEM_NUM}\00314)\003 \00307\${ITEM_TITLE} \002\00314-\003 \00305\${ITEM_LINK}\003 \00305(\00314Durée:\00307 \${MUSIC_DURATION}\00305)-(\00314Nombre de vues: \00307\${MUSIC_VIEWED}\00305)&quot;</font>
+
+	<font color="#208020">###</font>
+
+	<font color="#208020"># Message en cas de aucun resultat lors d'une recherche</font>
+	set Annonce(Null_Resultat)	&quot;\002\00305\Aucun Resultat trouvé.\003&quot;
+	
+	<font color="#208020"># Chaine de caractere de séparation entre deux titres :</font>
+	set Annonce(Split_Char)		&quot; \00304|\003 &quot;
+
+	<font color="#208020"># Nombre de lien par annonce</font>
+	set Annonce(Max_Links)		2
+
+	<font color="#208020"># Format d'affichage de la date de publication du titre</font>
+	<font color="#208020">#	Plus information sur https://www.tcl.tk/man/tcl/TclCmd/clock.htm#M26</font>
+	<font color="#208020">#	Exemple:	&quot;%a %d %b %Y à %H:%M&quot;</font>
+	set Format(Date)			&quot;%d/%m/%Y&quot;
+
+	<font color="#208020"># La region de la date de publication. en france utilisez &quot;fr&quot;</font>
+	<font color="#208020">#	Plus d'information sur https://www.tcl.tk/man/tcl/TclCmd/clock.htm#M20</font>
+	set Format(Date_locale)		&quot;fr&quot;
+
+	<font color="#208020"># Liste des salons où le script sera active</font>
+	<font color="#208020">#	mettre &quot;*&quot; pour tout les salons</font>
+	<font color="#208020"># Exemple pour autoriser #channel1 et #channel2</font>
+	<font color="#208020">#	set Channels(Allow)				&quot; #channel1  #channel2&quot;</font>
+	set Channels(Allow)			&quot;*&quot;
+	
+	
+	<font color="#208020">######################################################################################</font>
+	<font color="#208020">###  Fin de la Configuration Utilisateur</font>
+	<font color="#208020">######################################################################################</font>
+	
+
+	<font color="#208020">######################################################################################</font>
+	<font color="#208020">### Configuration avancées</font>
+	<font color="#208020">######################################################################################</font>
+
+	<font color="#208020"># URL (n'y touchez pas à moins d'avoir une bonne raison de le faire)</font>
+	set API(URL)					&quot;https://www.googleapis.com/youtube/v3&quot;
+
+	<font color="#208020"># User client du navigateur API</font>
+	set API(UserAgent)				&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36&quot;
+
+	<font color="#208020"># The two variables below control throttling in seconds. First is per user, second is per channel third is per link</font>
+	set Throttled(User)				5
+	set Throttled(Channel)			5
+	set Throttled(Link)				5
+	
+	set Bind(RegExp_URLMatching)	{(?:http(?:s|).{3}|)(?:www.|)(?:youtube.com\/watch\?.*v=|youtu.be\/)([\w-]{11})}
+	set Bind(Matching)				{*youtu*be*/*}
+
+	set Annonce(URL_YT)				&quot;https://youtu.be/&quot;
+	<font color="#208020">###############################################################################</font>
+	<font color="#208020">### Fin de la Configuration avancées</font>
+	<font color="#208020">###############################################################################</font>
+}
+
+<font color="#208020">###############################################################################</font>
+<font color="#208020">### Procédure principale</font>
+<font color="#208020">###############################################################################</font>
+setudef flag youtube
+<strong><a name="::YouTubeLink::add_thousand_separators_179">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::add_thousand_separators">::YouTubeLink::add_thousand_separators</a></a></strong><a name="::YouTubeLink::add_thousand_separators"></a> {value} {
+	<font color="#208020"># https://www.boulets.oqp.me/tcl/routines/tcl-toolbox-0001.html</font>
+	return [::tcl::string::trimleft [::tcl::string::reverse [regsub -all {...} [::tcl::string::reverse $value] {&amp;.}]] &quot;.&quot;]
+}
+<strong><a name="::YouTubeLink::DEBUG_183">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::DEBUG">::YouTubeLink::DEBUG</a></a></strong><a name="::YouTubeLink::DEBUG"></a> { text } {
+	variable Script
+	if { $Script(Debug) } { putlog &quot;\[$Script(Name)\] $text&quot; }
+}
+<strong><a name="::YouTubeLink::INIT_187">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::INIT">::YouTubeLink::INIT</a></a></strong><a name="::YouTubeLink::INIT"></a> { } {
+	variable Script
+	variable API
+	variable CMDIRC
+	variable Bind
+	
+	<font color="#208020">#############################################################################</font>
+	<font color="#208020">### Initialisation</font>
+	<font color="#208020">#############################################################################</font>
+
+	if { [package vcompare [regexp -inline {^[[:digit:]\.]+} $::version] 1.6.20] == -1 } { putloglev o * &quot;\[$Script(Name) - erreur\] La version de votre Eggdrop est ${::version}\003; $Script(Name) ne fonctionnera correctement que sur les Eggdrops version 1.6.20 ou supérieure.&quot; ; return }
+	if { [::tcl::info::tclversion] &lt; 8.5 } { putloglev o * &quot;\[$Script(Name) - erreur\] $Script(Name) nécessite que Tcl 8.5 (ou plus) soit installé pour fonctionner. Votre version actuelle de Tcl est ${::tcl_version}\003.&quot; ; return }
+	if { [catch { package require tls 1.7.11 }] } { putloglev o * &quot;\[$Script(Name) - erreur\] $Script(Name) nécessite le package tls 1.7 (ou plus) pour fonctionner. Le chargement du script a été annulé.&quot; ; return }
+	if { [catch { package require http 2.8.9 }] } { putloglev o * &quot;\[$Script(Name) - erreur\] $Script(Name) nécessite le package http 2.8.9 (ou plus) pour fonctionner. Le chargement du script a été annulé.&quot; ; return }
+	if { [catch { package require json 1.3 }] } { putloglev o * &quot;\[$Script(Name) - erreur\] $Script(Name) nécessite le package json 1.3 (ou plus) pour fonctionner. Le chargement du script a été annulé.&quot; ; return }
+	if { [catch { package require clock::iso8601 0.1 }] } { putloglev o * &quot;\[$Script(Name) - erreur\] $Script(Name) nécessite le package clock::iso8601 0.1 (ou plus) pour fonctionner. Le chargement du script a été annulé.&quot; ; return }
+	
+	::http::config -useragent $API(UserAgent)
+	<font color="#208020">###############################################################################</font>
+	<font color="#208020">### Binds</font>
+	<font color="#208020">###############################################################################</font>
+	foreach b $CMDIRC(Public) { bind pub $CMDIRC(Public_Flags) $b ::YouTubeLink::IRC:Search }
+	bind pubm $CMDIRC(Public_Flags) &quot;% $Bind(Matching)&quot; ::YouTubeLink::IRC:Listen:Links
+	bind evnt - prerehash ::YouTubeLink::Script:Unload
+
+	putlog &quot;$Script(Name) $Script(Version) by $Script(Auteur) loaded.&quot;
+}
+<strong><a name="::YouTubeLink::Script:Unload_214">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::Script:Unload">::YouTubeLink::Script:Unload</a></a></strong><a name="::YouTubeLink::Script:Unload"></a> {args} {
+	variable Script
+	putlog &quot;Désallocation des ressources de ${Script(Name)} ...&quot;
+	foreach binding [lsearch -inline -all -regexp [binds *[set ns [::tcl::string::range [namespace current] 2 end]]*] &quot; \{?(::)?$ns&quot;] {
+		putlog &quot;unbind [lindex $binding 0] [lindex $binding 1] [lindex $binding 2] [lindex $binding 4]&quot;
+	}
+	foreach running_utimer [utimers] {
+		if { [::tcl::string::match &quot;*[namespace current]::*&quot; [lindex $running_utimer 1]] } { killutimer [lindex $running_utimer 2] }
+	}
+	namespace delete [namespace current] ::[namespace current]
+}
+<strong><a name="::YouTubeLink::ThrottleCheck_225">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::ThrottleCheck">::YouTubeLink::ThrottleCheck</a></a></strong><a name="::YouTubeLink::ThrottleCheck"></a> { nick chan link } {
+	variable Throttled
+	if { [info exists ::YouTubeLink::Throttled($link)]} {
+		<a name="::YouTubeLink::DEBUG(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::ThrottleCheck search term or video id: $link, is Throttled at the moment&quot;
+		return 1
+	} elseif {[info exists ::YouTubeLink::Throttled($chan)]} {
+		<a name="::YouTubeLink::DEBUG(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::ThrottleCheck Channel $chan is Throttled at the moment&quot;
+		return 1
+	} elseif {[info exists ::YouTubeLink::Throttled($nick)]} {
+		<a name="::YouTubeLink::DEBUG(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::ThrottleCheck User $nick is Throttled at the moment&quot;
+		return 1
+	} else {
+		set ::YouTubeLink::Throttled($nick) [utimer $Throttled(User) [list unset ::YouTubeLink::Throttled($nick)]]
+		set ::YouTubeLink::Throttled($chan) [utimer $Throttled(Channel) [list unset ::YouTubeLink::Throttled($chan)]]
+		set ::YouTubeLink::Throttled($link) [utimer $Throttled(Link) [list unset ::YouTubeLink::Throttled($link)]]
+		return 0
+	}
+}
+<strong><a name="::YouTubeLink::API:ControlInfo_243">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::API:ControlInfo">::YouTubeLink::API:ControlInfo</a></a></strong><a name="::YouTubeLink::API:ControlInfo"></a> { URL_DATA } {
+	if { [dict exists ${URL_DATA} error] } {
+       return -code error [dict get [dict get ${URL_DATA} error] message]
+	}
+	return ${URL_DATA}
+}
+<strong><a name="::YouTubeLink::API:GetInfo_249">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::API:GetInfo">::YouTubeLink::API:GetInfo</a></a></strong><a name="::YouTubeLink::API:GetInfo"></a> { URL_Link } {
+	variable API
+	::http::register https 443 [list ::tls::socket -tls1 1]
+	array set httpconfig	[::http::config]
+	::http::config -urlencoding utf-8 -useragent $API(UserAgent)
+	<font color="#208020"># On remplace les caractères spéciaux par leur équivalent hexadécimal pour</font>
+	<font color="#208020"># pouvoir être utilisés dans l'url.</font>
+	<font color="#208020"># set arg [::http::mapReply $arg]</font>
+
+	<font color="#208020"># on restaure l'urlencoding comme il était avant qu'on y touche</font>
+	::http::config -urlencoding $httpconfig(-urlencoding)
+	if { [catch { set token [::http::geturl ${URL_Link} -timeout [expr $API(Timeout) * 1000]] }] } {
+		<a name="::YouTubeLink::DEBUG(4)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::API:GetInfo \00314La connexion à \00312\037[set URL_Link]\037\003\00314 n'a pas pu être établie. Il est possible que le site rencontre un problème technique.\003&quot;
+	} elseif {[::http::status ${token}] eq &quot;ok&quot;} {
+		<font color="#208020"># on extrait la partie qui nous intéresse et sur laquelle on va travailler</font>
+		set received_data [::http::data ${token}]
+		::http::cleanup ${token}
+		::http::unregister https
+		return [json::json2dict ${received_data}]
+	}
+
+}
+<strong><a name="::YouTubeLink::IRC:Search_271">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::IRC:Search">::YouTubeLink::IRC:Search</a></a></strong><a name="::YouTubeLink::IRC:Search"></a> { nick uhost hand chan text } {
+	variable YTDB
+	variable API
+	variable Channels
+	variable Annonce
+	variable CMDIRC
+	variable Format
+	if { $Channels(Allow) != &quot;*&quot; &amp;&amp; [lsearch -nocase $Channels(Allow) $chan] == &quot;-1&quot; &amp;&amp; ![channel get ${chan} youtube] } { return }
+	<font color="#208020"># !yt info 1</font>
+	if {
+		[string match -nocase &quot;info&quot; [lindex $text 0]]	\
+		&amp;&amp; [string is digit -strict [lindex $text 1]]	\
+		&amp;&amp; [lindex $text 2] == &quot;&quot;						\
+		&amp;&amp; [info exists YTDB([lindex $text 1])]
+	} {
+		set NUM	[lindex $text 1]
+		<a name="::YouTubeLink::IRC:Listen:Links(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::IRC:Listen:Links_361">::YouTubeLink::IRC:Listen:Links</a></a> $nick $uhost $hand $chan &quot;${Annonce(URL_YT)}$YTDB($NUM)&quot;
+		return 
+	}
+
+	if { [<a name="::YouTubeLink::ThrottleCheck(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::ThrottleCheck_225">::YouTubeLink::ThrottleCheck</a></a> $nick $chan $text] } {
+		<a name="::YouTubeLink::DEBUG(5)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::IRC:Search INFO: ThrottleCheck protection: $nick $chan $text&quot;
+		return
+	}
+	<a name="::YouTubeLink::DEBUG(6)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Search is running with $text from $chan/$nick&quot;
+
+	set URL_Link			&quot;${API(URL)}/search?part=snippet&amp;fields=items(id(videoId),snippet(title))&amp;[::http::formatQuery key $API(Key) maxResults [expr $API(Max_Resultats) + 1] q [lrange [split $text] 0 end]]&quot;
+	set URL_DATA			[<a name="::YouTubeLink::API:GetInfo(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_249">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
+	if { [ catch {
+    	<a name="::YouTubeLink::API:ControlInfo(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_243">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
+	} ERROR_MSG ] } {
+		puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG}&quot;
+		return 
+	}
+	set ITEMS_DATA			[dict get ${URL_DATA} items]
+	set ITEMS_DATA_LENGTH	[llength ${ITEMS_DATA}]
+	set ITEM_NUM			0
+	set LOOP_NUM			0
+	if { ${ITEMS_DATA_LENGTH} == 0 } {
+		puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} ${Annonce(Null_Resultat)}&quot;
+		return
+	}
+	for { set i 0 } { $i &lt; ${ITEMS_DATA_LENGTH} } { incr i } {
+		set ITEM_ID		[lindex ${ITEMS_DATA} $i 1 1];
+		if { $ITEM_ID == &quot;&quot; } { continue }
+		
+		incr ITEM_NUM
+		incr LOOP_NUM
+		set YTDB($ITEM_NUM)	${ITEM_ID}
+		set TMP_TITLE		[encoding convertfrom [lindex ${ITEMS_DATA} $i 3 1]];
+		set ITEM_TITLE		[string map -nocase [list &quot;&amp;amp;&quot; &quot;&amp;&quot; &quot;&amp;#39;&quot; &quot;'&quot; &quot;&amp;quot;&quot; &quot;\&quot;&quot;] $TMP_TITLE];
+		set ITEM_LINK		&quot;${Annonce(URL_YT)}${ITEM_ID}&quot;;
+
+		if { 
+			[string match &quot;*MUSIC_DURATION*&quot; $::YouTubeLink::Annonce(Message_Search)] \
+			|| [string match &quot;*MUSIC_PUBLISH*&quot; $::YouTubeLink::Annonce(Message_Search)] \
+			|| [string match &quot;*MUSIC_CHANNEL*&quot; $::YouTubeLink::Annonce(Message_Search)] \
+			|| [string match &quot;*MUSIC_DURATION*&quot; $::YouTubeLink::Annonce(Message_Search)] \
+			|| [string match &quot;*MUSIC_VIEWED*&quot; $::YouTubeLink::Annonce(Message_Search)]
+		} {
+			set URL_Link				&quot;${API(URL)}/videos?id=${ITEM_ID}&amp;part=snippet,statistics,contentDetails&amp;fields=items(snippet(title,channelTitle,publishedAt),statistics(viewCount),contentDetails(duration))&amp;[::http::formatQuery key $API(Key)]&quot;
+			set URL_DATA				[<a name="::YouTubeLink::API:GetInfo(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_249">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
+			if { [ catch {
+				<a name="::YouTubeLink::API:ControlInfo(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_243">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
+			} ERROR_MSG ] } {
+				puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG} (${URL_Link})&quot;
+				return 
+			}
+			set ITEM_DATA				{*}[dict get ${URL_DATA} items]
+			set MUSIC_PUBLISH_iso8601	[dict get ${ITEM_DATA} snippet publishedAt]
+			set MUSIC_PUBLISH			[clock format [::clock::iso8601 parse_time $MUSIC_PUBLISH_iso8601] -format $Format(Date) -locale $Format(Date_locale)]
+			set MUSIC_CHANNEL			[encoding convertfrom [dict get ${ITEM_DATA} snippet channelTitle]]
+			set MUSIC_DURATION			[<a name="::YouTubeLink::FCT:ISO8601:TO:DURATION(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::FCT:ISO8601:TO:DURATION_400">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a> [dict get ${ITEM_DATA} contentDetails duration]]
+			set MUSIC_VIEWED			[<a name="::YouTubeLink::add_thousand_separators(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::add_thousand_separators_179">::YouTubeLink::add_thousand_separators</a></a> [dict get ${ITEM_DATA} statistics viewCount]]
+		}
+
+		append output 		[subst $Annonce(Message_Search)] ${Annonce(Split_Char)}
+		if { $LOOP_NUM == ${Annonce(Max_Links)} } {
+			set LOOP_NUM	0
+			puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} [string trimright $output ${Annonce(Split_Char)}]&quot;
+			set output		&quot;&quot;
+		}
+	}
+	if { $output != &quot;&quot; } {
+		puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} [string trimright $output ${Annonce(Split_Char)}]&quot;
+	}
+	set CMD 	[lindex $CMDIRC(Public) 0]
+	puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} Info: $CMD info &lt;num&gt;&quot;
+}
+
+<strong><a name="::YouTubeLink::IRC:Listen:Links_361">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::IRC:Listen:Links">::YouTubeLink::IRC:Listen:Links</a></a></strong><a name="::YouTubeLink::IRC:Listen:Links"></a> {nick uhost hand chan text} {
+	variable Bind
+	variable API
+	variable Annonce
+	variable Format
+	variable Channels
+	if { $Channels(Allow) != &quot;*&quot; &amp;&amp; [lsearch -nocase $Channels(Allow) $chan] == &quot;-1&quot; &amp;&amp; ![channel get $chan youtube] } { return }
+	<a name="::YouTubeLink::DEBUG(7)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links is running with $text from $chan/$nick&quot;
+
+	if { ![regexp -nocase -- $Bind(RegExp_URLMatching) $text URL_Link id] } {
+		<a name="::YouTubeLink::DEBUG(8)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links ERREUR: regexp $Bind(RegExp_URLMatching) not match $text sur $chan&quot;
+		return
+	}
+	if { [<a name="::YouTubeLink::ThrottleCheck(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::ThrottleCheck_225">::YouTubeLink::ThrottleCheck</a></a> $nick $chan $id] } {
+		<a name="::YouTubeLink::DEBUG(9)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a>  &quot;::YouTubeLink::IRC:Listen:Links INFO: ThrottleCheck protection: $nick $chan $text&quot;
+		return
+	}
+	<a name="::YouTubeLink::DEBUG(10)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::DEBUG_183">::YouTubeLink::DEBUG</a></a> &quot;::YouTubeLink::IRC:Listen:Links info: url is: ${URL_Link} and id is: $id&quot;
+	set URL_Link				&quot;${API(URL)}/videos?id=$id&amp;part=snippet,statistics,contentDetails&amp;fields=items(snippet(title,channelTitle,publishedAt),statistics(viewCount),contentDetails(duration))&amp;[::http::formatQuery key $API(Key)]&quot;
+	set URL_DATA				[<a name="::YouTubeLink::API:GetInfo(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:GetInfo_249">::YouTubeLink::API:GetInfo</a></a> ${URL_Link}]
+	if { [ catch {
+    	<a name="::YouTubeLink::API:ControlInfo(3)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::API:ControlInfo_243">::YouTubeLink::API:ControlInfo</a></a> ${URL_DATA}
+	} ERROR_MSG ] } {
+		puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} ERROR: ${ERROR_MSG}&quot;
+		return 
+	}
+	set ITEMS_DATA				{*}[dict get ${URL_DATA} items]
+	set MUSIC_TITLE				[encoding convertfrom [dict get ${ITEMS_DATA} snippet title]]
+	set MUSIC_PUBLISH_iso8601	[dict get ${ITEMS_DATA} snippet publishedAt]
+
+	set MUSIC_PUBLISH			[clock format [::clock::iso8601 parse_time $MUSIC_PUBLISH_iso8601] -format $Format(Date) -locale $Format(Date_locale)]
+	set MUSIC_CHANNEL			[encoding convertfrom [dict get ${ITEMS_DATA} snippet channelTitle]]
+	set MUSIC_DURATION			[<a name="::YouTubeLink::FCT:ISO8601:TO:DURATION(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::FCT:ISO8601:TO:DURATION_400">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a> [dict get ${ITEMS_DATA} contentDetails duration]]
+	set MUSIC_VIEWED			[<a name="::YouTubeLink::add_thousand_separators(2)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::add_thousand_separators_179">::YouTubeLink::add_thousand_separators</a></a> [dict get ${ITEMS_DATA} statistics viewCount]]
+	set isotime					[lindex ${ITEMS_DATA} 0 3 1]
+	set views					[lindex ${ITEMS_DATA} 0 5 1]
+	puthelp &quot;PRIVMSG $chan :${Annonce(Prefix)} [subst $Annonce(Message)]&quot;
+}
+
+<strong><a name="::YouTubeLink::FCT:ISO8601:TO:DURATION_400">proc <a href="Youtube-Link.tcl-annot.html#::YouTubeLink::FCT:ISO8601:TO:DURATION">::YouTubeLink::FCT:ISO8601:TO:DURATION</a></a></strong><a name="::YouTubeLink::FCT:ISO8601:TO:DURATION"></a> { isotime } {
+	regsub -all {PT|S} $isotime &quot;&quot; isotime
+	regsub -all {H|M} $isotime &quot;:&quot; isotime
+	if { [string index $isotime end-1] == &quot;:&quot; } {
+		set sec		[string index $isotime end]
+		set trim	[string range $isotime 0 end-1]
+		set isotime	${trim}0$sec
+	} elseif { [string index $isotime 0] == &quot;0&quot; } {
+		set isotime	&quot;stream&quot;
+	} elseif { [string index $isotime end-2] != &quot;:&quot; } {
+		set isotime	&quot;${isotime}s&quot;
+	}
+	return $isotime
+}
+<font color="#208020"># Chargement du script</font>
+<a name="::YouTubeLink::INIT(1)"><a href="./Youtube-Link.tcl.html#::YouTubeLink::INIT_187">::YouTubeLink::INIT</a></a>
+
+</pre>
+<hr>
+<font size="-2">
+Index by:  <a href="index_main.html#byfilename">file name</a> |
+<a href="index_main.html#byprocname">procedure name</a> |
+<a href="index_main.html#bycall">procedure call</a> |
+<a href="index_annot_full.html">annotation</a><br>
+<cite>Index generated 2022-08-03 at 12:51.</cite>
+</font>
+</body>
+</html>

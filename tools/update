@@ -1,0 +1,11 @@
+#!/bin/bash
+
+git=$(which git)
+
+DIR_TOOLS=$( cd -- "$(dirname -- "$0")" &> /dev/null && pwd )
+DIR_ROOT=$(realpath -- "${DIR_TOOLS}/../")
+DIR_CURRENT=$(pwd)
+cd ${DIR_ROOT}
+git pull
+cd ${DIR_CURRENT}
+
