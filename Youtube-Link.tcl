@@ -48,6 +48,14 @@ namespace eval ::YouTubeLink {
 	variable Bind
 	variable Channels
 
+	# Valeur du scripts :
+	array set Script {
+		"Name"		"TCL-YouTube-Link"
+		"Auteur"	"ZarTek-Creole @ https://github.com/ZarTek-Creole"
+		"Version"	"2.6.1"
+		"Debug"		"0"
+	}
+
 	######################################################################################
 	### Configuration Utilisateur     *** (Modifier les variables dans cette sections) ***
 	######################################################################################
@@ -154,12 +162,6 @@ namespace eval ::YouTubeLink {
 	set Throttled(User)				5
 	set Throttled(Channel)			5
 	set Throttled(Link)				5
-	
-	# Valeur du scripts :
-	set Script(Name)				"TCL-YouTube-Link"
-	set Script(Auteur)				"ZarTek <ZarTek.Creole@GMail.Com>"
-	set Script(Version)				"2.6.1"
-	set Script(Debug)				0
 	
 	set Bind(RegExp_URLMatching)	{(?:http(?:s|).{3}|)(?:www.|)(?:youtube.com\/watch\?.*v=|youtu.be\/)([\w-]{11})}
 	set Bind(Matching)				{*youtu*be*/*}

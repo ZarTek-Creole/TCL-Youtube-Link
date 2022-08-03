@@ -1,0 +1,230 @@
+#!/bin/bash
+
+# Variable
+################################################################################
+
+# Nom du fichier Script TCL
+FILENAME_SCRIPT="Youtube-Link.tcl"
+
+# verification des pre requis:
+git=$(which git)
+
+DIR_TOOLS=$( cd -- "$(dirname -- "$0")" &> /dev/null && pwd )
+DIR_ROOT=$(realpath -- "${DIR_TOOLS}/../")
+
+DIR_CURRENT=$(pwd)
+FILE_PATH="$(realpath -- "${DIR_ROOT}/${FILENAME_SCRIPT}")"
+
+# Fonctions
+################################################################################
+
+# Récupere la version (x.x.x) dans le fichier TCL du script
+# et l'enregistre dans la variable VERS_CURR
+#
+    # array set PKG {
+    #     "Version"	        "0.0.5"
+    # }
+
+GetVERS_CURR () {
+    string=$(grep '"Version"' "${FILE_PATH}")
+    partern='\s+"Version"\s+"([0-9]+)\.([0-9]+)\.([0-9]+)"'
+    [[ ${string} =~ ${partern} ]]
+    VERS_CURR="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
+    echo "Current version: ${VERS_CURR}"
+}
+
+GetScriptName () {
+    string=$(grep '"name"' "${FILE_PATH}")
+    partern='\s+"name"\s+"([^"]])"'
+    [[ ${string} =~ ${partern} ]]
+    ScriptName="${BASH_REMATCH[1]}"
+    echo "Script name: ${ScriptName}"
+}
+
+# Met a jour la version
+# deux arguments fichier et nouvelle version :
+# UpdateVersion Fichier.tcl 0.0.6
+
+UpdateVersion() {
+  	sed -r -i "s/(\s+\"Version\"\s+\")(.*)(\".*)$/\1""${VERS_NEW}""\3/" "${FILENAME_SCRIPT}"
+  	[ -f "${DIR_ROOT}/pkgIndex.tcl" ] && sed -i "s/${VERS_CURR}/${VERS_NEW}/g" "${DIR_ROOT}/pkgIndex.tcl"
+ 	echo "New version: ${2}"
+}
+
+GitConfig() {
+	git config advice.addIgnoredFile false
+    git config pull.ff false
+    git config alias.sdiff '!'"git diff && git submodule foreach 'git diff'"
+    git config alias.spush 'push --recurse-submodules=on-demand'
+    git config alias.supdate 'submodule update --remote --merge'
+    git config alias.spull '!git pull && git submodule sync --recursive && git submodule update --init --recursive'
+}
+
+UpdateDocs() {
+	cd "${DIR_TOOLS}" || exit
+    # Generate docs
+    echo "Generating docs (be patient)..."
+    ### Check for dir, if not found create it using the mkdir ##
+    [ ! -d "tcldoc" ] && git clone https://github.com/ZarTek-Creole/tcldoc.git tcldoc > /dev/null
+	cd tcldoc || exit
+	[ -d ".git" ] && rm -rf .git
+	# remove old data before
+	rm -rf "${DIR_ROOT}"/docs
+    tclsh tcldoc.tcl --hide-paths --title "${ScriptName}" -f "${DIR_ROOT}"/docs "${DIR_ROOT}"/*.tcl
+	git add "${DIR_ROOT}"/docs  > /dev/null
+    git commit -m "Generate docs with ${VERS_NEW} version" > /dev/null
+}
+
+UpdateChangeLog() {
+	cd ${DIR_ROOT}
+   echo "<html>
+  <table>
+    <tr>
+      <th>date</th>
+      <th>commit</th>
+      <th>message</th>
+      <th>auteur</th>
+    </tr>" > ChangeLog.html
+    git log $(git describe --tags --abbrev=0)..HEAD --no-merges --oneline --pretty=format:"<tr>%n      <td>%cs</td>%n      <td>%h</td>%n      <td><a href="https://github.com/ZarTek-Creole/TCL-ClaraServ/commit/%h">%s</a></td>%n      <td>%an</td>%n    </tr>" >> ChangeLog.html
+    echo "  </table></html>" >> ChangeLog.html
+    echo "ChangeLog créé"
+	git add ChangeLog.html
+	git commit -m "Generate Update ChangeLog with ${VERS_NEW} version" > /dev/null
+}
+CheckBinaryExist() {
+	if test "${git}" = ""; then
+		echo "Error: Could not locate \`git' program."
+		exit 1
+	fi
+}
+CheckCommitInWaiting() {
+	echo "/-------------------------------------------------------"
+	echo "| Vérification des commits en attente."
+	echo "\-------------------------------------------------------"
+	OUT_STANDING_COMMITS=`git status | grep "nothing to commit" | wc -l | tr -d ' '` > /dev/null
+	if [ "$OUT_STANDING_COMMITS" != "1" ]; then
+		UNTRACKED=`git status | grep "nothing added to commit" | wc -l | tr -d ' '` > /dev/null
+		if [ "$UNTRACKED" != "1" ]; then
+			git status
+			echo "Vous avez des fichiers non suivis (stage) "
+			exit 1;
+		else 
+			cd -
+			echo "/-------------------------------------------------------"
+			echo "| Vous avez des commits en suspens."
+			echo "|  La Release ne peut pas continuer tant que tous les commits n'ont pas été poussés."
+			echo "\-------------------------------------------------------"
+			exit 1;	
+		fi
+	fi
+}
+CheckIgfBranchIsDevelop() {
+	echo "/-------------------------------------------------------"
+	echo "| Vérification de branche de développement. "
+	echo "\-------------------------------------------------------"
+	ON_BRANCH=`git branch | grep "^*" | awk '{ print $2}'` > /dev/null
+	if [ "$ON_BRANCH" != "develop" ]; then
+		echo "Vous êtes sur la branche nommé '${ON_BRANCH}' qui devrait généralement être 'develop'."
+		exit 1;
+	fi
+}
+
+# Code
+################################################################################
+
+# verification que le script TCL existe
+if [ ! -f "${FILE_PATH}" ]; then
+    echo "${FILE_PATH} est introuvable"
+    exit
+fi
+
+cd "${DIR_ROOT}" || exit
+
+
+# Verifie que l'appelle du script est correct
+# Premier argument:
+#   -M      Pour incrementer la valeur Major
+#   -m      Pour incrementer la valeur minor
+#   -p      Pour incrementer la valeur patch
+# Suivis du message du commit
+# ./release -m bugfix blabla
+if [ -z "$2" ]
+then
+    >&2 echo "usage: $(basename "$0") [-Mmp (Major.minor.patch)] <commit message> "
+    exit 1
+fi
+while getopts ":Mmp" Option
+do
+  case $Option in
+    M ) major=true;;
+    m ) minor=true;;
+    p ) patch=true;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+GetVERS_CURR
+# On recuperer la version du script tcl et la split en array
+a=( ${VERS_CURR//./ } )
+if [ ${#a[@]} -ne 3 ]
+then
+  >&2 echo "ERREUR: Numéro de version dans le script invalide ou introuvable."
+  exit 1
+fi
+
+# on incremente la version comme demander
+if [ -n "$major" ]
+then
+  ((a[0]++))
+  a[1]=0
+  a[2]=0
+fi
+if [ -n "$minor" ]
+then
+  ((a[1]++))
+  a[2]=0
+fi
+if [ -n "$patch" ]
+then
+  ((a[2]++))
+fi
+VERS_NEW=${a[0]}.${a[1]}.${a[2]}
+
+CheckBinaryExist
+#CheckCommitInWaiting
+CheckIgfBranchIsDevelop
+GetScriptName
+UpdateVersion
+GitConfig
+#Remove existing staged files
+# git reset HEAD -- . > /dev/null
+# git spush > /dev/null
+# git supdate > /dev/null
+# git spull > /dev/null
+git add . > /dev/null
+
+
+git commit -m "v${VERS_NEW}: $*"
+UpdateDocs
+UpdateChangeLog
+if [ -n "$patch" ]
+then
+	# Commit the release and tag it.
+
+	git tag "v${VERS_NEW}"
+	git push origin "v${VERS_NEW}"
+	git push origin develop
+else
+	  echo "major"
+ 	# Commit the release and tag it.
+	git push origin "v${VERS_NEW}"
+
+
+	git checkout master
+	git merge --no-ff develop
+	git tag -a "${VERS_NEW}"
+	git push origin master
+	git push --tags -f
+	git checkout develop
+fi
+cd "${DIR_CURRENT}" || exit
