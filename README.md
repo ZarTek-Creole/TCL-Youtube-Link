@@ -5,9 +5,9 @@
 [cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
 
 * Ce script récupère des informations sur les titres Youtube à l'aide de l'**API Youtube V3**.
-* Permet de rechercher des titres avec des mots clefs
+* Il permet de rechercher des titres avec des mots clefs
 * Il écoute les liens youtube sur les salons et affiche les informations des titres
-* Les annonces sont totalement personalisable : Couleurs, informations : Durée, etc
+* Les annonces sont totalement personnalisables : Couleurs, informations : Durée, etc
 
 ![image](https://user-images.githubusercontent.com/11725850/119846268-4699e100-bf0a-11eb-80f1-7cf5c7fbb5bc.png)
 
@@ -32,18 +32,18 @@ Si vous avez des remarques, des suggestions, des idées, des bogues vous pouvez 
 
 # Docs
 ## Téléchargement
-Utiliser la methode git, elle vous permet par la suite de mettre a jour le script facilement
+Utilisez la methode git, elle vous permet par la suite de mettre à jour le script facilement
 ```
 git clone https://github.com/ZarTek-Creole/TCL-Youtube-Link /home/<eggdrop>/scripts/
 ```
 ## Installation & Configuration
-Verifier que le repertoire ce trouve bien dans le repertoire `scripts/` de votre eggdrop.
+Verifiez que le répertoire se trouve bien dans le répertoire `scripts/` de votre eggdrop.
 
-Editez le fichier Youtube-link.tcl, en rensiegnant les variables au début par rapport a vos envies/besoins.
+Editez le fichier Youtube-link.tcl, en renseignant les variables au début par rapport à vos envies/besoins.
 
 Mettez bien une clef API que vous pouvez obtenir gratuitement sur https://console.cloud.google.com/apis/api/youtube.googleapis.com/overview
 
-Ajouter dans votre fichier eggdrop.conf le script:
+Ajoutez dans votre fichier eggdrop.conf la ligne :
 
 ```
 source scripts/TCL-Youtube-Link/Youtube-Link.tcl
@@ -58,7 +58,7 @@ source scripts/TCL-Youtube-Link/Youtube-Link.tcl
 ```
 .chanset * +youtube
 ```
-## Par liste de salon
+## Par liste de salons
 
 ### Activation sur certains salons
 ```
@@ -70,15 +70,15 @@ set Channels(Allow)     "#channel1  #channel2"
 set Channels(Allow)		"*"
 ```
 
-Rehasher ou redemmarer votre eggdrop.
+Rehashez ou redemmarez votre eggdrop.
 
 # Donation
-Si le script ou le travail accompli vous plaît, vous pouvez faire une don pour encourager :
+Si le script ou le travail accompli vous plaît, vous pouvez faire un don pour m'encourager :
 * https://ko-fi.com/zartek
 * github.com/ZarTek-Creole/DONATE
 
 # Thank's
-Merci aux differentes personnes qui ont permis la realisation du script:
+Merci aux différentes personnes qui ont permi la réalisation du script:
 
 Nom | participation | url
 ---------|----------|---------
