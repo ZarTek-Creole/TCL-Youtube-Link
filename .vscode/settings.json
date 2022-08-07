@@ -1,0 +1,6 @@
+{
+    "search.exclude": {
+        "**/docs": true,
+        "**tools/tcldoc": true
+    }
+}
