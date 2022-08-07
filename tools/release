@@ -26,7 +26,7 @@ FILE_PATH="$(realpath -- "${DIR_ROOT}/${FILENAME_SCRIPT}")"
     # }
 
 GetVERS_CURR () {
-    string=$(grep '"Version"' "${FILE_PATH}")
+    string=$(grep -i '"Version"' "${FILE_PATH}")
     partern='\s+"Version"\s+"([0-9]+)\.([0-9]+)\.([0-9]+)"'
     [[ ${string} =~ ${partern} ]]
     VERS_CURR="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
@@ -34,7 +34,7 @@ GetVERS_CURR () {
 }
 
 GetScriptName () {
-    string=$(grep '"name"' "${FILE_PATH}")
+    string=$(grep -i '"name"' "${FILE_PATH}")
     partern='\s+"name"\s+"([^"]])"'
     [[ ${string} =~ ${partern} ]]
     ScriptName="${BASH_REMATCH[1]}"
@@ -48,7 +48,7 @@ GetScriptName () {
 UpdateVersion() {
   	sed -r -i "s/(\s+\"Version\"\s+\")(.*)(\".*)$/\1""${VERS_NEW}""\3/" "${FILENAME_SCRIPT}"
   	[ -f "${DIR_ROOT}/pkgIndex.tcl" ] && sed -i "s/${VERS_CURR}/${VERS_NEW}/g" "${DIR_ROOT}/pkgIndex.tcl"
- 	echo "New version: ${2}"
+ 	echo "New version: ${VERS_NEW}"
 }
 
 GitConfig() {
@@ -101,9 +101,9 @@ CheckCommitInWaiting() {
 	echo "/-------------------------------------------------------"
 	echo "| Vérification des commits en attente."
 	echo "\-------------------------------------------------------"
-	OUT_STANDING_COMMITS=`git status | grep "nothing to commit" | wc -l | tr -d ' '` > /dev/null
+	OUT_STANDING_COMMITS=`git status | grep -i "nothing to commit" | wc -l | tr -d ' '` > /dev/null
 	if [ "$OUT_STANDING_COMMITS" != "1" ]; then
-		UNTRACKED=`git status | grep "nothing added to commit" | wc -l | tr -d ' '` > /dev/null
+		UNTRACKED=`git status | grep -i "nothing added to commit" | wc -l | tr -d ' '` > /dev/null
 		if [ "$UNTRACKED" != "1" ]; then
 			git status
 			echo "Vous avez des fichiers non suivis (stage) "
