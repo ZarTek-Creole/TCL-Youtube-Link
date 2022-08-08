@@ -3,11 +3,24 @@
 
 [cc-by]: http://creativecommons.org/licenses/by/4.0/
 [cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
-
-* Ce script récupère des informations sur les titres Youtube à l'aide de l'**API Youtube V3**.
-* Permet de rechercher des titres avec des mots clefs
-* Il écoute les liens youtube sur les salons et affiche les informations des titres
-* Les annonces sont totalement personalisable : Couleurs, informations : Durée, etc
+- [Auteur](#auteur)
+- [Pre-requis](#pre-requis)
+- [Website](#website)
+- [Support](#support)
+- [Docs](#docs)
+  - [Téléchargement](#téléchargement)
+  - [Installation & Configuration](#installation--configuration)
+- [Configuration des salons](#configuration-des-salons)
+  - [Par Flags](#par-flags)
+    - [Activation sur un salon spécifique](#activation-sur-un-salon-spécifique)
+    - [Activation sur tous les salons](#activation-sur-tous-les-salons)
+  - [Par liste de salon](#par-liste-de-salon)
+    - [Activation sur certains salons](#activation-sur-certains-salons)
+    - [Activation sur tous les salons](#activation-sur-tous-les-salons-1)
+- [Donation](#donation)
+- [Thank's](#thanks)
+- [Contributeurs](#contributeurs)
+- [Documentation du code](#documentation-du-code)
 
 ![image](https://user-images.githubusercontent.com/11725850/119846268-4699e100-bf0a-11eb-80f1-7cf5c7fbb5bc.png)
 

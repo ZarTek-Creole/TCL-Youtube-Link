@@ -25,7 +25,8 @@
 			"extensions": [
 				"eamodio.gitlens",
 				"michelemelluso.gitignore",
-				"bitwisecook.tcl"
+				"bitwisecook.tcl",
+				"yzhang.markdown-all-in-one"
 			]
 		}
 	}
