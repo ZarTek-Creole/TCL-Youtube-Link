@@ -1,0 +1,14 @@
+2004-10-22  J. Tang  <tang@jtang.org>
+
+	* Updated tcldoc.html file to reflect changes below.
+
+	* Added Makefile.
+
+	* Changed --doc-files option to also allow invidual files.
+
+	* Changed calculation of first sentences to strip HTML tags.
+
+	* Maintain newlines within comment blocks, to facilitate <pre>
+	tags.
+	
+
